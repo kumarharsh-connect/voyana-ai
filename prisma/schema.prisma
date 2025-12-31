@@ -1,0 +1,103 @@
+generator client {
+  provider = "prisma-client-js"
+  engineType = "library"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ENUMS
+
+enum TripStatus {
+  DRAFT
+  GENERATED
+  FINALIZED
+}
+
+enum MessageRole {
+  USER
+  ASSISTANT
+  SYSTEM
+}
+
+// MODELS
+
+model User {
+  id             String @id @default(cuid())
+  clerkId        String @unique
+  email          String @unique
+  name           String?
+  imageUrl       String?
+
+  // onboarding & default preferences
+  preferences    Json?
+  onboarded      Boolean @default(false)
+
+  trips          Trip[]
+
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+
+model Trip {
+  id             String @id @default(cuid())
+  userId         String 
+
+  // core trip info
+  title          String
+  destination    String
+  budget         Int?
+  pace           String?
+
+  // group details (optional)
+  groupSize      Int?
+  groupType      String?
+
+  status         TripStatus @default(DRAFT)
+
+  itinerary      Itinerary?
+
+  messages       Message[]
+
+  user           User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Itinerary {
+  id             String @id @default(cuid())
+  tripId         String @unique
+
+  content        Json
+
+  // AI-generated structure content
+  // Includes: 
+  // - overview
+  // - days[]
+  //   - preferenceHint (optional)
+  //   - spots[] (with expense, thumbnail, lat/lng, etc.)
+
+
+  // meta deta
+  generatedByAI  Boolean @default(true)
+  mapsEnriched   Boolean @default(false)
+  pdfExportedAt  DateTime?
+
+  trip           Trip @relation(fields: [tripId], references: [id], onDelete: Cascade)
+
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+
+model Message {
+  id             String @id @default(cuid())
+  tripId         String
+
+  role           MessageRole
+  content        String
+
+  trip           Trip @relation(fields: [tripId], references: [id], onDelete: Cascade)
+
+  createdAt      DateTime @default(now())
+}
