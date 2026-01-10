@@ -62,6 +62,7 @@ model Trip {
   messages       Message[]
 
   user           User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  updatedAt      DateTime @updatedAt
 }
 
 model Itinerary {

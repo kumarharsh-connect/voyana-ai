@@ -15,18 +15,31 @@ export async function POST(req: Request) {
       },
       title: body.title ?? 'New Trip',
       destination: body.destination,
-      budget: body.budget,
-      pace: body.pace,
-      itinerary: {
-        create: {
-          days: {}, // placeholder, AI will fill later
-        },
-      },
-    },
-    include: {
-      itinerary: true,
+      budget: body.budget ?? null,
+      pace: body.pace ?? null,
+      groupSize: body.groupSize ?? null,
+      groupType: body.groupType ?? null,
+      status: 'DRAFT',
     },
   });
 
   return NextResponse.json(trip);
+}
+
+export async function GET(req: Request) {
+  const { userId } = await auth();
+
+  if (!userId) {
+    return new NextResponse('Unauthorized', { status: 401 });
+  }
+
+  const trips = await prisma.trip.findMany({
+    where: {
+      user: { clerkId: userId },
+    },
+    orderBy: {
+      updatedAt: 'desc',
+    },
+  });
+  return NextResponse.json(trips);
 }

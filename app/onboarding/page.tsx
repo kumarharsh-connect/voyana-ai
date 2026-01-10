@@ -1,25 +1,29 @@
 'use client';
+import { useUser } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 
 export default function OnboardingPage() {
   const router = useRouter();
+  const { isLoaded, isSignedIn } = useUser();
 
   useEffect(() => {
-    const syncUser = async () => {
-      try {
-        await fetch('/api/auth/sync', {
-          method: 'POST',
-        });
+    if (!isLoaded || !isSignedIn) return;
 
-        // After sync go to dashboard
-        router.replace('/dashboard');
-      } catch (error) {
-        console.log('User sync failed', error);
+    const syncUser = async () => {
+      const res = await fetch('/api/auth/sync', {
+        method: 'POST',
+      });
+
+      if (!res.ok) {
+        console.error('User sync failed');
+        return;
       }
+
+      router.replace('/dashboard');
     };
     syncUser();
-  }, [router]);
+  }, [router, isLoaded, isSignedIn]);
 
   return (
     <div className='flex min-h-screen flex-col items-center justify-center gap-3'>
