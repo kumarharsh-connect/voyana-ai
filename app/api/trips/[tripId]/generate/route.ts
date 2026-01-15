@@ -4,6 +4,7 @@ import { assertTripCanGenerate } from '@/lib/guards/tripStatusGuard';
 import { NextResponse } from 'next/server';
 import { headers } from 'next/headers';
 import { prisma } from '@/lib/prisma';
+import { fetchDestinationImage } from '@/lib/images/unsplash';
 
 import { openai } from '@/lib/ai/openai';
 import { GENERATION_SYSTEM_PROMPT } from '@/lib/ai/generationSystemPrompt';
@@ -106,6 +107,21 @@ export async function POST(
       where: { id: trip.id },
       data: { status: 'GENERATED' },
     });
+
+    if (!trip.coverImageUrl) {
+      try {
+        const imageUrl = await fetchDestinationImage(trip.destination);
+
+        if (imageUrl) {
+          await prisma.trip.update({
+            where: { id: trip.id },
+            data: { coverImageUrl: imageUrl },
+          });
+        }
+      } catch (err) {
+        console.warn('Cover image generation failed: ', err);
+      }
+    }
 
     return NextResponse.json({ type: 'ITINERARY', itinerary });
   } catch (error: any) {

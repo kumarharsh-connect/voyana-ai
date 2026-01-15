@@ -1,0 +1,27 @@
+import { prisma } from '@/lib/prisma';
+
+export async function getUserTrips(clerkUserId: string) {
+  return prisma.trip.findMany({
+    where: {
+      user: {
+        clerkId: clerkUserId,
+      },
+    },
+    orderBy: { updatedAt: 'desc' },
+    select: {
+      id: true,
+      title: true,
+      destination: true,
+      status: true,
+      coverImageUrl: true,
+      budget: true,
+      groupType: true,
+      updatedAt: true,
+      itinerary: {
+        select: {
+          content: true,
+        },
+      },
+    },
+  });
+}

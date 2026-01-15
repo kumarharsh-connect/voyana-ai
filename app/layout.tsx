@@ -1,6 +1,5 @@
 // @ts-ignore
 import './globals.css';
-import Navbar from '../components/layout/navbar';
 import type { Metadata } from 'next';
 import { Playfair_Display, Sora } from 'next/font/google';
 import { ClerkProvider } from '@clerk/nextjs';
@@ -17,7 +16,7 @@ const sora = Sora({
 
 export const metadata: Metadata = {
   title: 'Voyana AI',
-  description: 'Your AI-powered travel assistant',
+  description: 'AI-powered travel assistant',
 };
 
 export default function RootLayout({
@@ -29,8 +28,9 @@ export default function RootLayout({
     <ClerkProvider>
       <html lang='en'>
         <head />
-        <body className={`${sora.variable} ${playfair.variable} antialiased`}>
-          <Navbar />
+        <body
+          className={`${sora.variable} ${playfair.variable} antialiased font-sora`}
+        >
           {children}
         </body>
       </html>

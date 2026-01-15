@@ -50,17 +50,14 @@ model Trip {
   destination    String
   budget         Int?
   pace           String?
+  coverImageUrl  String?  
 
   // group details (optional)
   groupSize      Int?
   groupType      String?
-
   status         TripStatus @default(DRAFT)
-
   itinerary      Itinerary?
-
   messages       Message[]
-
   user           User @relation(fields: [userId], references: [id], onDelete: Cascade)
   updatedAt      DateTime @updatedAt
 }
@@ -75,7 +72,6 @@ model Itinerary {
   // Includes: 
   // - overview
   // - days[]
-  //   - preferenceHint (optional)
   //   - spots[] (with expense, thumbnail, lat/lng, etc.)
 
 

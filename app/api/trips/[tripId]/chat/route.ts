@@ -68,6 +68,7 @@ export async function POST(
     if (!aiText) {
       throw new Error('EMPTY_AI_RESPONSE');
     }
+    console.log(aiText);
 
     let aiResponse: {
       itinerary: any;
@@ -103,7 +104,7 @@ export async function POST(
     });
 
     return NextResponse.json({
-      itinerary: updatedItinerary,
+      itinerary: updatedItinerary.content,
       reply: aiResponse.reply,
     });
   } catch (error: any) {
