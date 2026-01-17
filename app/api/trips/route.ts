@@ -8,38 +8,47 @@ export async function POST(req: Request) {
 
   const body = await req.json();
 
+  const {
+    destination,
+    days,
+    groupType,
+    pace,
+    minBudget,
+    maxBudget,
+    currency = 'INR',
+  } = body;
+
+  // REQUIRED FIELDS
+  if (!destination || !days || !groupType) {
+    return new NextResponse('Missing required fields', { status: 400 });
+  }
+
   const trip = await prisma.trip.create({
     data: {
-      user: {
-        connect: { clerkId: userId },
-      },
-      title: body.title ?? 'New Trip',
-      destination: body.destination,
-      budget: body.budget ?? null,
-      pace: body.pace ?? null,
-      groupSize: body.groupSize ?? null,
-      groupType: body.groupType ?? null,
+      user: { connect: { clerkId: userId } },
+      title: `Trip to ${destination}`,
+      destination,
+      days,
+      groupType,
+      pace: pace ?? 'balanced',
+      minBudget: minBudget ?? null,
+      maxBudget: maxBudget ?? null,
+      currency,
       status: 'DRAFT',
     },
   });
 
-  return NextResponse.json(trip);
+  return NextResponse.json({ tripId: trip.id });
 }
 
-export async function GET(req: Request) {
+export async function GET() {
   const { userId } = await auth();
-
-  if (!userId) {
-    return new NextResponse('Unauthorized', { status: 401 });
-  }
+  if (!userId) return new NextResponse('Unauthorized', { status: 401 });
 
   const trips = await prisma.trip.findMany({
-    where: {
-      user: { clerkId: userId },
-    },
-    orderBy: {
-      updatedAt: 'desc',
-    },
+    where: { user: { clerkId: userId } },
+    orderBy: { updatedAt: 'desc' },
   });
+
   return NextResponse.json(trips);
 }

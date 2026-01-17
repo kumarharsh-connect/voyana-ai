@@ -31,5 +31,7 @@ CRITICAL:
 - Do NOT use "time" or "activity"
 - Do NOT add extra keys
 - Do NOT add group_size, budget, etc.
-- Every day must have at least 3 activities
+- The number of days MUST match the requested duration.
+-Generate Exactly that many days.
+
 `;

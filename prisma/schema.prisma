@@ -48,17 +48,23 @@ model Trip {
   // core trip info
   title          String
   destination    String
-  budget         Int?
+  days           Int
+
+  minBudget      Int?
+  maxBudget      Int?
+  currency       String @default("INR")
+
   pace           String?
   coverImageUrl  String?  
 
-  // group details (optional)
-  groupSize      Int?
   groupType      String?
-  status         TripStatus @default(DRAFT)
+  status         TripStatus @default(GENERATED)
+
   itinerary      Itinerary?
   messages       Message[]
   user           User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 }
 

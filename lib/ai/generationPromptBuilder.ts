@@ -1,27 +1,36 @@
 export function buildGenerationPrompt({
   destination,
-  groupSize,
+  days,
   groupType,
-  budget,
+  minBudget,
+  maxBudget,
+  currency,
   pace,
 }: {
   destination: string;
-  groupSize: number | null;
-  groupType: string | null;
-  budget: number | null;
+  days: number;
+  groupType: string;
+  minBudget?: number | null;
+  maxBudget?: number | null;
+  currency: string;
   pace: string | null;
 }) {
   return `
   Trip details:
 Destination: ${destination}
-Group size: ${groupSize ?? 'unknown'}
-Group type: ${groupType ?? 'unknown'}
-Budget: ${budget ?? 'flexible'}
+Number of days: ${days}
+Group type: ${groupType}
 Pace: ${pace ?? 'balanced'}
 
+Budget: ${
+    minBudget && maxBudget
+      ? `${minBudget}-${maxBudget} ${currency}`
+      : `Flexible`
+  }
+
 Task:
-Generate a day-wise travel itinerary.
+Generate a realistic, well paced ${days}-day travel itinerary.
 Each day should have multiple activities.
-Use realistic travel planning.
+Consider the group type and budget while planning.
   `;
 }

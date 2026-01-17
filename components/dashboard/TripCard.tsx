@@ -1,11 +1,11 @@
 import Link from 'next/link';
-import Image from 'next/image';
 import { Button } from '@/components/ui/button';
-import { MapPin, ImageOff } from 'lucide-react'; // Import icons for a better placeholder
+import { MapPin, ImageOff } from 'lucide-react';
 
 type TripCardProps = {
   trip: {
     id: string;
+    itinerary: any;
     title: string;
     destination: string;
     status: string;
@@ -19,10 +19,9 @@ export default function TripCard({ trip }: TripCardProps) {
       {/* Cover Image Container */}
       <div className='relative h-48 w-full overflow-hidden bg-muted'>
         {trip.coverImageUrl ? (
-          <Image
+          <img
             src={trip.coverImageUrl}
             alt={trip.destination}
-            fill
             className='object-cover transition-all duration-500 group-hover:scale-105 group-hover:saturate-110'
           />
         ) : (
@@ -63,7 +62,7 @@ export default function TripCard({ trip }: TripCardProps) {
             </Button>
           </Link>
 
-          {trip.status === 'GENERATED' && (
+          {trip.status === 'GENERATED' && trip.itinerary?.mapsEnriched && (
             <Link href={`/api/trips/${trip.id}/export/pdf`} tabIndex={-1}>
               <Button
                 variant='secondary'

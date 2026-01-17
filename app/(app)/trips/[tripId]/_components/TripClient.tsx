@@ -1,42 +1,41 @@
 'use client';
+
 import { useState } from 'react';
 import TripHeader from './TripHeader';
 import ItineraryTimeline from './ItineraryTimeline';
 import MapPanel from './MapPanel';
 import AIAssistant from './AIAssistant';
-import DraftEmptyState from './DraftEmptyState';
 
-export default function TripClient({
-  tripId,
-  trip,
-  initialItinerary,
-}: {
-  tripId: string;
-  trip: any;
-  initialItinerary: any | null;
-}) {
+export default function TripClient({ tripId, trip, initialItinerary }: any) {
   const [itinerary, setItinerary] = useState(initialItinerary);
+  const [mapsLoading, setMapsLoading] = useState(false);
 
-  const isDraft = trip.status === 'DRAFT';
+  const enrichMaps = async () => {
+    if (!itinerary || trip.itinerary?.mapsEnriched) return;
 
-  // if (!itinerary) return null;
+    setMapsLoading(true);
+    const res = await fetch(`/api/trips/${tripId}/maps`, { method: 'POST' });
+    if (res.ok) {
+      const updated = await res.json();
+      setItinerary(updated.content);
+    }
+    setMapsLoading(false);
+  };
 
   return (
-    <div className='relative'>
-      <TripHeader trip={trip} />
+    <>
+      <TripHeader
+        trip={trip}
+        onEnrichMaps={enrichMaps}
+        mapsLoading={mapsLoading}
+      />
 
-      {isDraft ? (
-        <DraftEmptyState tripId={tripId} />
-      ) : (
-        <>
-          <div className='mx-auto max-w-7xl px-4 py-10 grid grid-cols-1 lg:grid-cols-[1fr_420px] gap-10'>
-            <ItineraryTimeline itinerary={itinerary} />
-            <MapPanel itinerary={itinerary} />
-          </div>
+      <div className='max-w-7xl mx-auto grid lg:grid-cols-[1fr_420px] gap-10 px-6 py-10'>
+        <ItineraryTimeline itinerary={itinerary} />
+        <MapPanel itinerary={itinerary} />
+      </div>
 
-          <AIAssistant tripId={tripId} onItineraryUpdate={setItinerary} />
-        </>
-      )}
-    </div>
+      <AIAssistant tripId={tripId} onItineraryUpdate={setItinerary} />
+    </>
   );
 }

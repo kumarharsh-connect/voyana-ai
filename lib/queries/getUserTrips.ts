@@ -14,7 +14,8 @@ export async function getUserTrips(clerkUserId: string) {
       destination: true,
       status: true,
       coverImageUrl: true,
-      budget: true,
+      minBudget: true,
+      maxBudget: true,
       groupType: true,
       updatedAt: true,
       itinerary: {

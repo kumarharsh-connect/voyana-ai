@@ -49,7 +49,6 @@ export async function POST(
       itinerary: existingContent,
       userMessage: message,
       destination: trip.destination,
-      groupSize: trip.groupSize,
       groupType: trip.groupType,
     });
 
