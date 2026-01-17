@@ -1,14 +1,11 @@
 import { MapPin, Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import Link from 'next/link';
 
 export default function TripHeader({
   trip,
-  onEnrichMaps,
-  mapsLoading,
 }: {
   trip: any;
-  onEnrichMaps: () => void;
-  mapsLoading: boolean;
 }) {
   return (
     <header className='border-b border-border bg-background/80 backdrop-blur'>
@@ -23,25 +20,13 @@ export default function TripHeader({
             </div>
           </div>
 
-          {trip.status === 'GENERATED' && (
-            <div className='flex items-center gap-3'>
-              <Button
-                variant='secondary'
-                onClick={onEnrichMaps}
-                disabled={mapsLoading || trip.itinerary?.mapsEnriched}
-              >
-                <MapPin className='h-4 w-4 mr-2' />
-                {mapsLoading ? 'Loading Maps...' : 'Enable Map View'}
-              </Button>
-
-              <Button
-                variant='secondary'
-                disabled={!trip.itinerary.mapsEnriched}
-              >
+          {trip.status === 'GENERATED' && trip.itinerary && (
+            <Link href={`/api/trips/${trip.id}/export/pdf`} tabIndex={-1}>
+              <Button variant='secondary'>
                 <Download className='h-4 w-4 mr-2' />
                 Export PDF
               </Button>
-            </div>
+            </Link>
           )}
         </div>
 

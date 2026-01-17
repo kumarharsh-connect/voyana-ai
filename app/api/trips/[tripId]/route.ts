@@ -4,10 +4,11 @@ import { prisma } from '@/lib/prisma';
 
 export async function GET(
   _req: Request,
-  { params }: { params: { tripId: string } }
+  { params }: { params: Promise<{ tripId: string }> }
 ) {
   try {
-    const trip = await getAuthorizedTrip(params.tripId);
+    const { tripId } = await params;
+    const trip = await getAuthorizedTrip(tripId);
     return NextResponse.json(trip);
   } catch {
     return new NextResponse('Trip not found', { status: 404 });
@@ -16,10 +17,11 @@ export async function GET(
 
 export async function DELETE(
   _req: Request,
-  { params }: { params: { tripId: string } }
+  { params }: { params: Promise<{ tripId: string }> }
 ) {
   try {
-    const trip = await getAuthorizedTrip(params.tripId);
+    const { tripId } = await params;
+    const trip = await getAuthorizedTrip(tripId);
     await prisma.trip.delete({ where: { id: trip.id } });
     return NextResponse.json({ success: true });
   } catch {
@@ -29,10 +31,11 @@ export async function DELETE(
 
 export async function PATCH(
   req: Request,
-  { params }: { params: { tripId: string } }
+  { params }: { params: Promise<{ tripId: string }> }
 ) {
   try {
-    const trip = await getAuthorizedTrip(params.tripId);
+    const { tripId } = await params;
+    const trip = await getAuthorizedTrip(tripId);
     const body = await req.json();
 
     const data: any = {};

@@ -1,6 +1,6 @@
 export const dynamic = 'force-dynamic';
 
-import { prisma } from '@/lib/prisma';
+import { getAuthorizedTrip } from '@/lib/guards/tripGuard';
 import { notFound } from 'next/navigation';
 import TripClient from './_components/TripClient';
 
@@ -10,18 +10,30 @@ export default async function TripPage({
   params: Promise<{ tripId: string }>;
 }) {
   const { tripId } = await params;
-  const trip = await prisma.trip.findUnique({
-    where: { id: tripId },
-    include: { itinerary: true },
-  });
+  
+  let trip;
+  try {
+    trip = await getAuthorizedTrip(tripId);
+  } catch (error: any) {
+    if (error.message === 'UNAUTHORIZED' || error.message === 'TRIP_NOT_FOUND') {
+      notFound();
+    }
+    throw error;
+  }
 
-  if (!trip) notFound();
+  const initialMessages = trip.messages
+    .filter((msg) => msg.role !== 'SYSTEM')
+    .map((msg) => ({
+      role: msg.role as 'USER' | 'ASSISTANT',
+      content: msg.content,
+    }));
 
   return (
     <TripClient
       tripId={trip.id}
       trip={trip}
       initialItinerary={trip.itinerary?.content ?? null}
+      initialMessages={initialMessages}
     />
   );
 }

@@ -13,7 +13,7 @@ export function buildGenerationPrompt({
   minBudget?: number | null;
   maxBudget?: number | null;
   currency: string;
-  pace: string | null;
+  pace: string;
 }) {
   return `
   Trip details:

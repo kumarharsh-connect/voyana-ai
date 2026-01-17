@@ -1,14 +1,12 @@
 import { geocodePlace } from './geoapify';
 import { distanceInKm } from './distance';
-import { getDestinationLocation } from './getDestinationLocation';
-
 const MAX_DISTANCE_KM = 50;
 
 export async function enrichItineraryWithMaps(
   itinerary: any,
   destination: string
 ) {
-  const destinationLocation = await getDestinationLocation(destination);
+  const destinationLocation = await geocodePlace(destination);
 
   if (!destinationLocation) {
     // skip map when no geocode

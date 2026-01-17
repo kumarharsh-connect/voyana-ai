@@ -13,6 +13,31 @@ type ItineraryContent = {
   [key: string]: any;
 };
 
+function mergeItineraryPreservingLocations(
+  oldItinerary: any,
+  newItinerary: any
+) {
+  const locationMap = new Map<string, any>();
+  for (const day of oldItinerary?.days ?? []) {
+    for (const activity of day.activities ?? []) {
+      if (activity.location) {
+        locationMap.set(activity.name, activity.location);
+      }
+    }
+  }
+
+  return {
+    ...newItinerary,
+    days: newItinerary.days.map((day: any) => ({
+      ...day,
+      activities: day.activities.map((activity: any) => ({
+        ...activity,
+        location: locationMap.get(activity.name) ?? activity.location ?? null,
+      })),
+    })),
+  };
+}
+
 export async function POST(
   req: Request,
   { params }: { params: Promise<{ tripId: string }> }
@@ -85,11 +110,18 @@ export async function POST(
     }
 
     // update itinerary
+
+    const mergedItinerary = mergeItineraryPreservingLocations(
+      existingContent,
+      aiResponse.itinerary
+    );
+
     const updatedItinerary = await prisma.itinerary.update({
       where: { tripId: trip.id },
       data: {
-        content: aiResponse.itinerary,
+        content: mergedItinerary,
         generatedByAI: true,
+        mapsEnriched: false,
       },
     });
 

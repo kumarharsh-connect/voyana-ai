@@ -17,10 +17,14 @@ export async function getUserTrips(clerkUserId: string) {
       minBudget: true,
       maxBudget: true,
       groupType: true,
+      days: true,
+      currency: true,
       updatedAt: true,
+      createdAt: true,
       itinerary: {
         select: {
           content: true,
+          mapsEnriched: true,
         },
       },
     },

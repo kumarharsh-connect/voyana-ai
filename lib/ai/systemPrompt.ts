@@ -23,7 +23,13 @@ JSON SCHEMA (STRICT):
           {
             "name": string,
             "description": string,
-            "time"?: string
+            "time"?: string,
+            "location"?: {
+              "lat": number,
+              "lng": number,
+              "address": string,
+              "placeId": string | null
+            }
           }
         ]
       }
@@ -31,6 +37,12 @@ JSON SCHEMA (STRICT):
   },
   "reply": string
 }
+
+CRITICAL LOCATION PRESERVATION RULE:
+- If an activity in the current itinerary has a "location" object, you MUST preserve it in your response
+- Do NOT remove or modify existing location objects
+- Only add new location objects if the activity is completely new
+- Preserve all location data exactly as provided (lat, lng, address, placeId)
 
 If you violate the schema, the response will be rejected.
 `;

@@ -1,23 +1,33 @@
+import dynamic from 'next/dynamic';
+
+const ItineraryMap = dynamic(() => import('./ItineraryMap'), {
+  ssr: false,
+});
+
 export default function MapPanel({ itinerary }: { itinerary: any }) {
-  const location =
+  const locations =
     itinerary?.days?.flatMap((day: any) =>
-      day.activities.filter((a: any) => a.location).map((a: any) => a.location)
+      day.activities
+        .filter((a: any) => a.location)
+        .map((a: any) => ({
+          lat: a.location.lat,
+          lng: a.location.lng,
+          address: a.location.address,
+        })),
     ) ?? [];
 
   return (
-    <aside
-      id='map-panel'
-      className='sticky top-24 h-[calc(100vh-6rem)] rounded-2xl border border-border bg-muted/30 overflow-hidden'
-    >
-      <h3 className='font-semibold mb-3'>Places Covered</h3>
-      {location.length === 0 ? (
-        <p className='text-muted-foreground text-sm'>Mapping places...</p>
+    <aside className='sticky top-24 h-[calc(100vh-6rem)] rounded-2xl border border-border bg-background overflow-hidden'>
+      <div className='border-b px-4 py-3'>
+        <h3 className='font-semibold'>Places Covered</h3>
+      </div>
+
+      {locations.length === 0 ? (
+        <div className='p-4 text-sm text-muted-foreground'>
+          Enable map view to see locations
+        </div>
       ) : (
-        <ul className='space-y-2 text-sm'>
-          {location.map((loc: any, i: number) => (
-            <li key={i}>{loc.address}</li>
-          ))}
-        </ul>
+        <ItineraryMap locations={locations} />
       )}
     </aside>
   );

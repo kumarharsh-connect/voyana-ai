@@ -36,7 +36,9 @@ export async function POST(
       },
     });
 
-    return NextResponse.json(updated);
+    return NextResponse.json({
+      content: updated.content,
+    });
   } catch (error) {
     console.error('MAPS ENRICH ERROR:', error);
     return new NextResponse('Server error', { status: 500 });
