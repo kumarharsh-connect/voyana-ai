@@ -1,12 +1,12 @@
 import ItineraryDay from './ItineraryDay';
 
-type Props = {
-  itinerary?: {
-    days?: any[];
-  };
-};
-
-export default function ItineraryTimeline({ itinerary }: Props) {
+export default function ItineraryTimeline({
+  itinerary,
+  onSelectedLocation,
+}: {
+  itinerary?: { days?: any[] };
+  onSelectedLocation: (loc: any) => void;
+}) {
   if (!itinerary?.days?.length) {
     return (
       <p className='text-muted-foreground'>No itinerary days available yet.</p>
@@ -14,9 +14,13 @@ export default function ItineraryTimeline({ itinerary }: Props) {
   }
 
   return (
-    <div>
+    <div className='space-y-10'>
       {itinerary.days.map((day) => (
-        <ItineraryDay key={day.day} day={day} />
+        <ItineraryDay
+          key={day.day}
+          day={day}
+          onSelectedLocation={onSelectedLocation}
+        />
       ))}
     </div>
   );

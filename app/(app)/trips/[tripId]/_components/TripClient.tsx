@@ -5,6 +5,7 @@ import TripHeader from './TripHeader';
 import ItineraryTimeline from './ItineraryTimeline';
 import MapPanel from './MapPanel';
 import AIAssistant from './AIAssistant';
+import { MapLocation } from '@/types/map';
 
 export interface Message {
   role: 'USER' | 'ASSISTANT';
@@ -24,14 +25,18 @@ export default function TripClient({
 }) {
   const [itinerary, setItinerary] = useState(initialItinerary);
   const [messages, setMessages] = useState<Message[]>(initialMessages || []);
+  const [focusLocation, setFocusLocation] = useState<MapLocation | undefined>();
 
   return (
     <>
       <TripHeader trip={trip} />
 
       <div className='max-w-7xl mx-auto grid lg:grid-cols-[1fr_420px] gap-10 px-6 py-10'>
-        <ItineraryTimeline itinerary={itinerary} />
-        <MapPanel itinerary={itinerary} />
+        <ItineraryTimeline
+          itinerary={itinerary}
+          onSelectedLocation={setFocusLocation}
+        />
+        <MapPanel itinerary={itinerary} focusLocation={focusLocation} />
       </div>
 
       <AIAssistant
