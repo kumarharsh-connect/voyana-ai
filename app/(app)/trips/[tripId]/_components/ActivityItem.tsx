@@ -10,12 +10,14 @@ export default function ActivityItem({
   return (
     <div
       onClick={onClick}
-      className='relative cursor-pointer rounded-xl p-3 transition hover:bg-muted/30'
+      className='group relative cursor-pointer rounded-xl p-4 transition hover:bg-muted/40 hover:shadow-sm active:scale-[0.99]'
     >
-      <span className='absolute -left-[9px] top-2 h-3 w-3 rounded-full bg-primary' />
+      <span className='absolute -left-[11px] top-5 h-3.5 w-3.5 rounded-full bg-primary ring-4 ring-background' />
 
       <div className='space-y-1'>
-        <h3 className='font-semibold'>{activity.name}</h3>
+        <h3 className='font-semibold group-hover:text-primary transition'>
+          {activity.name}
+        </h3>
 
         {activity.time && (
           <div className='flex items-center gap-2 text-sm text-muted-foreground'>

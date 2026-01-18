@@ -9,23 +9,22 @@ export default function ItineraryDay({
 }) {
   return (
     <section>
-      <h2 className='mb-6 font-heading text-2xl font-semibold'>
+      <h2 className='mb-8 font-heading text-2xl font-semibold tracking-tight'>
         Day {day.day}
       </h2>
 
-      <div className='relative pl-6 border-l border-border space-y-6'>
+      <div className='relative pl-8 border-l-2 border-border/60 space-y-8'>
         {day.activities.map((activity: any, idx: number) => (
           <ActivityItem
             key={idx}
             activity={activity}
             onClick={() => {
-              if (!activity.location) return;
+              if (!activity.location?.lat || !activity.location?.lng) return;
 
               onSelectedLocation({
-                ...activity.location({
-                  day: day.day,
-                  index: idx,
-                }),
+                ...activity.location,
+                day: day.day,
+                index: idx,
               });
             }}
           />

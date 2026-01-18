@@ -1,6 +1,10 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { MapPin, ImageOff, Calendar, Users, Wallet, Download } from 'lucide-react';
+import { MapPin, Calendar, Users, Wallet, Download } from 'lucide-react';
+import { formatRelativeTime } from '@/lib/format/time';
+import { formatBudget } from '@/lib/format/budget';
+import { getGroupTypeLabel, getDestinationInitials } from '@/lib/format/text';
+import { getStatusColor } from '@/lib/ui/trip';
 
 type TripCardProps = {
   trip: {
@@ -19,59 +23,12 @@ type TripCardProps = {
   };
 };
 
-function formatRelativeTime(date: Date): string {
-  const now = new Date();
-  const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
-
-  if (diffInSeconds < 60) return 'Just now';
-  if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}m ago`;
-  if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}h ago`;
-  if (diffInSeconds < 604800) return `${Math.floor(diffInSeconds / 86400)}d ago`;
-  if (diffInSeconds < 2592000) return `${Math.floor(diffInSeconds / 604800)}w ago`;
-  return `${Math.floor(diffInSeconds / 2592000)}mo ago`;
-}
-
-function getStatusColor(status: string): string {
-  switch (status) {
-    case 'GENERATED':
-      return 'bg-green-500/10 text-green-700 dark:text-green-400 border-green-500/20';
-    case 'DRAFT':
-      return 'bg-yellow-500/10 text-yellow-700 dark:text-yellow-400 border-yellow-500/20';
-    case 'FINALIZED':
-      return 'bg-blue-500/10 text-blue-700 dark:text-blue-400 border-blue-500/20';
-    default:
-      return 'bg-muted text-muted-foreground border-border';
-  }
-}
-
-function getGroupTypeLabel(groupType: string | null | undefined): string {
-  if (!groupType) return 'Solo';
-  return groupType.charAt(0).toUpperCase() + groupType.slice(1);
-}
-
-function formatBudget(
-  min: number | null | undefined,
-  max: number | null | undefined,
-  currency: string = 'INR'
-): string {
-  if (!min && !max) return '';
-  if (min && max) return `${currency} ${min.toLocaleString()} - ${max.toLocaleString()}`;
-  if (min) return `From ${currency} ${min.toLocaleString()}`;
-  if (max) return `Up to ${currency} ${max.toLocaleString()}`;
-  return '';
-}
-
-function getDestinationInitials(destination: string): string {
-  return destination
-    .split(' ')
-    .map((word) => word[0])
-    .join('')
-    .toUpperCase()
-    .slice(0, 2);
-}
-
 export default function TripCard({ trip }: TripCardProps) {
-  const budgetText = formatBudget(trip.minBudget, trip.maxBudget, trip.currency);
+  const budgetText = formatBudget(
+    trip.minBudget,
+    trip.maxBudget,
+    trip.currency,
+  );
   const destinationInitials = getDestinationInitials(trip.destination);
 
   return (
@@ -89,7 +46,9 @@ export default function TripCard({ trip }: TripCardProps) {
             <div className='flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/20 text-primary font-bold text-2xl shadow-inner'>
               {destinationInitials}
             </div>
-            <span className='mt-3 text-sm font-medium text-muted-foreground'>{trip.destination}</span>
+            <span className='mt-3 text-sm font-medium text-muted-foreground'>
+              {trip.destination}
+            </span>
           </div>
         )}
 
@@ -123,7 +82,9 @@ export default function TripCard({ trip }: TripCardProps) {
             {trip.days && (
               <div className='flex items-center gap-1'>
                 <Calendar className='h-3.5 w-3.5' />
-                <span>{trip.days} {trip.days === 1 ? 'day' : 'days'}</span>
+                <span>
+                  {trip.days} {trip.days === 1 ? 'day' : 'days'}
+                </span>
               </div>
             )}
 

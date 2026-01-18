@@ -31,7 +31,7 @@ export default function TripClient({
     <>
       <TripHeader trip={trip} />
 
-      <div className='max-w-7xl mx-auto grid lg:grid-cols-[1fr_420px] gap-10 px-6 py-10'>
+      <div className='max-w-7xl mx-auto grid lg:grid-cols-[1fr_420px] gap-12 px-6 py-12'>
         <ItineraryTimeline
           itinerary={itinerary}
           onSelectedLocation={setFocusLocation}

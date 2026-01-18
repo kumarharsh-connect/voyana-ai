@@ -14,6 +14,8 @@ import {
 } from 'react-leaflet';
 import { getDayIcon } from '@/lib/maps/markerIcons';
 
+const COLORS = ['#ef4444', '#22c55e', '#3b82f6', '#a855f7', '#f97316'];
+
 function MapController({ focus }: { focus?: MapLocation }) {
   const map = useMap();
 
@@ -76,11 +78,22 @@ export default function ItineraryMap({
       <MapController focus={focus} />
 
       {Object.entries(routesByDay).map(([day, points]) => (
-        <Polyline key={day} positions={points} pathOptions={{ weight: 3 }} />
+        <Polyline
+          key={day}
+          positions={points}
+          pathOptions={{
+            weight: 3,
+            color: COLORS[(Number(day) - 1) % COLORS.length],
+          }}
+        />
       ))}
 
       {locations.map((loc, i) => (
-        <Marker key={i} position={[loc.lat, loc.lng]}>
+        <Marker
+          key={i}
+          position={[loc.lat, loc.lng]}
+          icon={getDayIcon(loc.day)}
+        >
           <Popup>
             <p className='text-sm font-medium'>{loc.address}</p>
           </Popup>

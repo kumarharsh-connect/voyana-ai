@@ -14,7 +14,7 @@ export default function ItineraryTimeline({
   }
 
   return (
-    <div className='space-y-10'>
+    <div className='space-y-14'>
       {itinerary.days.map((day) => (
         <ItineraryDay
           key={day.day}
