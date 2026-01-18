@@ -1,3 +1,4 @@
+'use client';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { MapPin, Calendar, Users, Wallet, Download } from 'lucide-react';
@@ -5,6 +6,7 @@ import { formatRelativeTime } from '@/lib/format/time';
 import { formatBudget } from '@/lib/format/budget';
 import { getGroupTypeLabel, getDestinationInitials } from '@/lib/format/text';
 import { getStatusColor } from '@/lib/ui/trip';
+import { exportTripPdf } from '@/lib/actions/exportPdf';
 
 type TripCardProps = {
   trip: {
@@ -121,16 +123,20 @@ export default function TripCard({ trip }: TripCardProps) {
           </Link>
 
           {trip.status === 'GENERATED' && trip.itinerary?.mapsEnriched && (
-            <Link href={`/api/trips/${trip.id}/export/pdf`} tabIndex={-1}>
-              <Button
-                variant='secondary'
-                size='icon'
-                className='rounded-xl border-primary border bg-white text-primary hover:bg-primary/10 font-medium transition-transform active:scale-95'
-                title='Export PDF'
-              >
-                <Download className='h-4 w-4' />
-              </Button>
-            </Link>
+            <Button
+              variant='secondary'
+              size='icon'
+              className='rounded-xl border-primary border bg-white text-primary hover:bg-primary/10 font-medium transition-transform active:scale-95'
+              title='Export PDF'
+              onClick={() => {
+                exportTripPdf({
+                  tripId: trip.id,
+                  destination: trip.destination,
+                });
+              }}
+            >
+              <Download className='h-4 w-4' />
+            </Button>
           )}
         </div>
       </div>

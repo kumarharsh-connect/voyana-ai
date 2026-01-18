@@ -1,10 +1,11 @@
-import { MapPin, Download, Calendar, Users, Wallet } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { useState } from 'react';
 import Link from 'next/link';
+import { Button } from '@/components/ui/button';
+import { MapPin, Download, Calendar, Users, Wallet } from 'lucide-react';
 import { formatBudget } from '@/lib/format/budget';
 import { getDestinationInitials } from '@/lib/format/text';
 import { getStatusColor } from '@/lib/ui/trip';
-import TripsHeader from '@/components/dashboard/TripsHeader';
+import { exportTripPdf } from '@/lib/actions/exportPdf';
 
 export default function TripHeader({ trip }: { trip: any }) {
   const budgetText = formatBudget(
@@ -13,6 +14,20 @@ export default function TripHeader({ trip }: { trip: any }) {
     trip.currency,
   );
   const initials = getDestinationInitials(trip.destination);
+
+  const [exporting, setExporting] = useState(false);
+
+  const handleExportPdf = async () => {
+    exportTripPdf({
+      tripId: trip.id,
+      destination: trip.destination,
+      onStart: () => setExporting(true),
+      onFinish: () => setExporting(false),
+      onError: () => {
+        alert('Failed to export PDF. Please try again.');
+      },
+    });
+  };
 
   return (
     <header className='relative border-b border-border bg-background/70 backdrop-blur-md'>
@@ -98,15 +113,15 @@ export default function TripHeader({ trip }: { trip: any }) {
             </Link>
 
             {trip.status === 'GENERATED' && trip.itinerary && (
-              <Link href={`/api/trips/${trip.id}/export/pdf`} tabIndex={-1}>
-                <Button
-                  variant='secondary'
-                  className='rounded-xl border-primary/50 text-background hover:bg-primary/30 hover:text-primary/50 hover:border-2'
-                >
-                  <Download className='h-4 w-4 mr-2' />
-                  Export PDF
-                </Button>
-              </Link>
+              <Button
+                variant='secondary'
+                disabled={exporting}
+                onClick={handleExportPdf}
+                className='rounded-xl border-primary/50 text-background hover:bg-primary/30 hover:text-primary/50 hover:border-2'
+              >
+                <Download className='h-4 w-4 mr-2' />
+                {exporting ? 'Exporting...' : 'Export PDF'}
+              </Button>
             )}
           </div>
         </div>
