@@ -28,9 +28,7 @@ export default function RootLayout({
     <ClerkProvider>
       <html lang='en'>
         <head />
-        <body
-          className={`${sora.variable} ${playfair.variable} antialiased font-sora`}
-        >
+        <body className={`${sora.variable} ${playfair.variable} antialiased`}>
           {children}
         </body>
       </html>

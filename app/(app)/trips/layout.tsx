@@ -9,7 +9,7 @@ export default function DashboardLayout({
   return (
     <>
       <AppNavbar />
-      <main className='pt-20'>{children}</main>
+      <main className='pt-18'>{children}</main>
     </>
   );
 }

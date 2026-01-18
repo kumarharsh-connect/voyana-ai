@@ -2,7 +2,7 @@
 import Link from 'next/link';
 import { Button } from '../ui/button';
 import { useEffect, useState } from 'react';
-import { SignInButton } from '@clerk/nextjs';
+import { SignInButton, UserButton, SignedIn, SignedOut } from '@clerk/nextjs';
 
 function Navbar() {
   const navOptions = [
@@ -57,13 +57,38 @@ function Navbar() {
               </Link>
             ))}
           </div>
-          {/* User Profile / Auth paths */}
-          <div className='flex items-center gap-10 '>
-            <SignInButton mode='modal'>
-              <Button className='bg-linear-to-br from-primary to-secondary text-white rounded-xl'>
-                Get Started
-              </Button>
-            </SignInButton>
+          <div className='flex items-center gap-6 '>
+            {/* Logged In */}
+            <SignedOut>
+              <SignInButton mode='modal'>
+                <Button className='bg-linear-to-br from-primary to-secondary text-white rounded-xl'>
+                  Get Started
+                </Button>
+              </SignInButton>
+            </SignedOut>
+
+            {/* Logged Out */}
+            <SignedIn>
+              <div className='flex items-center gap-4'>
+                <Link href='/trips'>
+                  <Button
+                    variant='secondary'
+                    className='rounded-xl font-medium'
+                  >
+                    My Trips
+                  </Button>
+                </Link>
+
+                <UserButton
+                  appearance={{
+                    elements: {
+                      avatarBox:
+                        'h-10 w-10 rounded-full ring-2 ring-primary/20',
+                    },
+                  }}
+                />
+              </div>
+            </SignedIn>
           </div>
         </div>
       </div>

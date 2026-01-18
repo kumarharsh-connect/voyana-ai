@@ -37,7 +37,7 @@ export default function OnboardingPage() {
         <Button
           size='lg'
           className='bg-linear-to-b from-primary to-secondary h-14 rounded-2xl px-8 text-base font-semibold shadow-xl shadow-primary/20 transition-all hover:-translate-y-1 hover:shadow-2xl'
-          onClick={() => router.push('/trips/new')}
+          onClick={() => router.push('/trips/create')}
         >
           Create Your First Trip
         </Button>

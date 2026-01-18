@@ -33,7 +33,7 @@ export default async function DashboardHeader({
 
         {showCTA && (
           <div className='mt-8'>
-            <Link href='/trips/new'>
+            <Link href='/trips/create'>
               <Button
                 size='lg'
                 className='rounded-2xl bg-linear-to-r from-primary to-secondary font-semibold shadow-lg shadow-primary/20 transition-all hover:-translate-y-0.5 hover:shadow-primary/30'
