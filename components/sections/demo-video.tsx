@@ -1,5 +1,5 @@
 'use client';
-import SampleVideo from '@/videos/sample-video.mp4';
+import VoyanaTutorial from '@/videos/voyana-ai.mp4';
 import NextVideo from 'next-video';
 
 export default function DemoVideo() {
@@ -20,7 +20,7 @@ export default function DemoVideo() {
           style={{ animationDelay: '150ms' }}
         >
           <NextVideo
-            src={SampleVideo}
+            src={VoyanaTutorial}
             controls
             autoplay
             loop

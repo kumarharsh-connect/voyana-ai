@@ -36,78 +36,77 @@ export async function POST(req: Request) {
     );
   }
 
-  // const trip = await prisma.trip.create({
-  //   data: {
-  //     user: {
-  //       connect: { clerkId: userId },
-  //     },
-  //     title: body.title ?? `Trip to ${body.destination}`,
-  //     destination: body.destination,
-  //     days: body.days,
-  //     groupType: body.groupType ?? 'solo',
-  //     pace: body.pace ?? 'balanced',
-  //     minBudget: body.minBudget,
-  //     maxBudget: body.maxBudget,
-  //     status: 'GENERATED',
-  //   },
-  // });
-
-  // // Generate itinerary with AI and enrich with maps
-  // let enrichedContent;
-  // try {
-  //   enrichedContent = await generateItinerary({
-  //     destination: trip.destination,
-  //     days: trip.days,
-  //     groupType: trip.groupType,
-  //     minBudget: trip.minBudget,
-  //     maxBudget: trip.maxBudget,
-  //     currency: trip.currency,
-  //     pace: trip.pace,
-  //   });
-  // } catch (error: any) {
-  //   if (error.message === 'AI_EMPTY_RESPONSE') {
-  //     return new NextResponse('AI did not respond', { status: 502 });
-  //   }
-  //   if (error.message === 'AI_INVALID_JSON') {
-  //     return new NextResponse('AI returned invalid JSON', { status: 502 });
-  //   }
-  //   if (error.message === 'AI_INVALID_RESPONSE') {
-  //     return new NextResponse('AI returned invalid response', { status: 502 });
-  //   }
-  //   throw error;
-  // }
-
-  // await prisma.itinerary.create({
-  //   data: {
-  //     tripId: trip.id,
-  //     content: enrichedContent,
-  //     generatedByAI: true,
-  //     mapsEnriched: true,
-  //   },
-  // });
-
-  // fetchDestinationImage(trip.destination)
-  //   .then((url) => {
-  //     if (url) {
-  //       return prisma.trip.update({
-  //         where: { id: trip.id },
-  //         data: { coverImageUrl: url },
-  //       });
-  //     }
-  //   })
-  //   .catch(() => {});
-
-  const trip = await createTrip({
-    userId,
-    destination: body.destination,
-    days: body.days,
-    groupType: body.groupType,
-    pace: body.pace,
-    minBudget: body.minBudget,
-    maxBudget: body.maxBudget,
-    currency: body.currency,
-    title: body.title,
+  const trip = await prisma.trip.create({
+    data: {
+      user: {
+        connect: { clerkId: userId },
+      },
+      title: body.title ?? `Trip to ${body.destination}`,
+      destination: body.destination,
+      days: body.days,
+      groupType: body.groupType ?? 'solo',
+      pace: body.pace ?? 'balanced',
+      minBudget: body.minBudget,
+      maxBudget: body.maxBudget,
+      status: 'GENERATED',
+    },
   });
+
+  let enrichedContent;
+  try {
+    enrichedContent = await generateItinerary({
+      destination: trip.destination,
+      days: trip.days,
+      groupType: trip.groupType,
+      minBudget: trip.minBudget,
+      maxBudget: trip.maxBudget,
+      currency: trip.currency,
+      pace: trip.pace,
+    });
+  } catch (error: any) {
+    if (error.message === 'AI_EMPTY_RESPONSE') {
+      return new NextResponse('AI did not respond', { status: 502 });
+    }
+    if (error.message === 'AI_INVALID_JSON') {
+      return new NextResponse('AI returned invalid JSON', { status: 502 });
+    }
+    if (error.message === 'AI_INVALID_RESPONSE') {
+      return new NextResponse('AI returned invalid response', { status: 502 });
+    }
+    throw error;
+  }
+
+  await prisma.itinerary.create({
+    data: {
+      tripId: trip.id,
+      content: enrichedContent,
+      generatedByAI: true,
+      mapsEnriched: true,
+    },
+  });
+
+  fetchDestinationImage(trip.destination)
+    .then((url) => {
+      if (url) {
+        return prisma.trip.update({
+          where: { id: trip.id },
+          data: { coverImageUrl: url },
+        });
+      }
+    })
+    .catch(() => {});
+
+  // const trip = await createTrip({
+  //   userId,
+  //   destination: body.destination,
+  //   days: body.days,
+  //   groupType: body.groupType,
+  //   pace: body.pace,
+  //   minBudget: body.minBudget,
+  //   maxBudget: body.maxBudget,
+  //   currency: body.currency,
+  //   title: body.title,
+  // });
   return NextResponse.json({ tripId: trip.id });
 }
 
