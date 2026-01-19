@@ -1,7 +1,18 @@
 'use client';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { MapPin, Calendar, Users, Wallet, Download } from 'lucide-react';
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import {
+  MapPin,
+  Calendar,
+  Users,
+  Wallet,
+  Download,
+  MoreVertical,
+  Trash2,
+  Pencil,
+} from 'lucide-react';
 import { formatRelativeTime } from '@/lib/format/time';
 import { formatBudget } from '@/lib/format/budget';
 import { getGroupTypeLabel, getDestinationInitials } from '@/lib/format/text';
@@ -25,7 +36,26 @@ type TripCardProps = {
   };
 };
 
+async function deletetrip(tripId: string) {
+  const ok = confirm('Are you sure you want to delete this trip?');
+  if (!ok) return;
+
+  const res = await fetch(`/api/trips/${tripId}`, {
+    method: 'DELETE',
+  });
+
+  if (!res.ok) {
+    alert('Failed to delete trip');
+    return;
+  }
+
+  window.location.reload();
+}
+
 export default function TripCard({ trip }: TripCardProps) {
+  const router = useRouter();
+  const [menuOpen, setMenuOpen] = useState(false);
+
   const budgetText = formatBudget(
     trip.minBudget,
     trip.maxBudget,
@@ -37,6 +67,32 @@ export default function TripCard({ trip }: TripCardProps) {
     <div className='group relative flex flex-col overflow-hidden rounded-2xl border border-border/50 bg-card shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:ring-2 hover:ring-primary/5 hover:border-primary/10'>
       {/* Cover Image Container */}
       <div className='relative h-48 w-full overflow-hidden bg-muted'>
+        <button
+          onClick={() => setMenuOpen((v) => !v)}
+          className='absolute z-50 top-3 left-3 x-10 rounded-full bg-background/80 backdrop-blur p-1.5 hover:bg-background shadow-sm'
+        >
+          <MoreVertical className='h-4 w-4 text-muted-foreground' />
+        </button>
+        {menuOpen && (
+          <div className='absolute top-12 left-3 z-20 w-36 rounded-xl border border-border bg-background shadow-lg overflow-hidden'>
+            <button
+              onClick={() => {
+                router.push(`/trips/${trip.id}`);
+              }}
+              className='w-full flex items-center gap-2 px-4 py-2 text-sm hover:bg-muted'
+            >
+              <Pencil className='h-4 w-4' />
+              Edit
+            </button>
+            <button
+              onClick={() => deletetrip(trip.id)}
+              className='w-full flex items-center gap-2 px-4 py-2 text-sm text-destructive hover:bg-destructive/10'
+            >
+              <Trash2 className='h-4 w-4' />
+              Delete
+            </button>
+          </div>
+        )}
         {trip.coverImageUrl ? (
           <img
             src={trip.coverImageUrl}
@@ -122,7 +178,7 @@ export default function TripCard({ trip }: TripCardProps) {
             </Button>
           </Link>
 
-          {trip.status === 'GENERATED' && trip.itinerary?.mapsEnriched && (
+          {trip.itinerary && (
             <Button
               variant='secondary'
               size='icon'

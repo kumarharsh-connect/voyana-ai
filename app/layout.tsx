@@ -28,7 +28,10 @@ export default function RootLayout({
     <ClerkProvider>
       <html lang='en'>
         <head />
-        <body className={`${sora.variable} ${playfair.variable} antialiased`}>
+        <body
+          className={`${sora.variable} ${playfair.variable} antialiased `}
+          suppressHydrationWarning={true}
+        >
           {children}
         </body>
       </html>

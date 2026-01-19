@@ -1,9 +1,8 @@
 'use client';
-
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import { Button } from '../ui/button';
-import { UserButton } from '@clerk/nextjs';
+import { UserButton, ClerkLoaded } from '@clerk/nextjs';
 import { Plus } from 'lucide-react';
 
 export default function AppNavbar() {
@@ -69,13 +68,15 @@ export default function AppNavbar() {
               </Link>
             </Button>
 
-            <UserButton
-              appearance={{
-                elements: {
-                  avatarBox: 'h-10 w-10',
-                },
-              }}
-            />
+            <ClerkLoaded>
+              <UserButton
+                appearance={{
+                  elements: {
+                    avatarBox: 'h-10 w-10',
+                  },
+                }}
+              />
+            </ClerkLoaded>
           </div>
         </div>
       </div>

@@ -13,6 +13,10 @@ export default async function DashboardHeader({
 
   return (
     <div className='relative overflow-hidden rounded-4xl border border-white/10 bg-linear-to-br from-primary/10 via-background to-secondary/10 p-6 md:p-10 shadow-xl shadow-primary/10'>
+      <img
+        src='/hero/trips-hero-backdrop.webp'
+        className='absolute inset-0 kobject-cover'
+      />
       <div
         className='pointer-events-none absolute -top-24 -right-24 h-72 w-72 rounded-full bg-primary/20 blur-3xl'
         aria-hidden='true'

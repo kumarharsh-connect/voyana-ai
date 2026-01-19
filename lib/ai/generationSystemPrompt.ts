@@ -34,4 +34,29 @@ CRITICAL:
 - The number of days MUST match the requested duration.
 -Generate Exactly that many days.
 
+IMPORTANT LOCATION RULES:
+
+- For MOST activities (sightseeing, attractions, landmarks, restaurants, experiences),
+  you MUST include a "location" object.
+
+- A valid location object MUST contain:
+  {
+    "lat": number,
+    "lng": number,
+    "address": string,
+    "placeId": string | null
+  }
+
+- Use REAL, well-known places where possible (e.g. "Eiffel Tower", "Colosseum", "Baga Beach").
+
+- If an activity is generic or non-location-based
+  (e.g. "Travel to hotel", "Free time", "Rest", "Shopping time"),
+  you MAY omit the location field.
+
+- NEVER invent coordinates.
+- If you are unsure about exact coordinates, choose a popular, accurate landmark nearby.
+- Prefer accuracy over completeness.
+
+- The majority of activities in each day SHOULD have locations.
+
 `;

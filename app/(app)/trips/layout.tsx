@@ -1,7 +1,7 @@
 import AppNavbar from '@/components/layout/app-navbar';
 import React from 'react';
 
-export default function DashboardLayout({
+export default function TripsLayout({
   children,
 }: {
   children: React.ReactNode;

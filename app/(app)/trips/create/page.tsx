@@ -47,7 +47,7 @@ export default function CreateTripPage() {
   const [days, setDays] = useState(0);
   const [groupType, setGroupType] = useState('Solo');
   const [pace, setPace] = useState('balanced');
-  const [currency, setCurrency] = useState('USD');
+  const [currency, setCurrency] = useState('INR');
   const [minBudget, setMinBudget] = useState('');
   const [maxBudget, setMaxBudget] = useState('');
   const [loading, setLoading] = useState(false);
@@ -66,20 +66,24 @@ export default function CreateTripPage() {
         groupType: groupType.toLowerCase(),
         pace,
         currency,
-        minBudget: minBudget || null,
-        maxBudget: maxBudget || null,
+        minBudget: minBudget ? Number(minBudget) : null,
+        maxBudget: maxBudget ? Number(maxBudget) : null,
       }),
     });
 
-    const { tripId } = await res.json();
-    router.push(`/trips/${tripId}`);
+    const data = await res.json();
+    if (!res.ok || !data.tripId) {
+      console.error(data);
+      throw new Error(data.error ?? 'Trip creation failed');
+    }
+    router.push(`/trips/${data.tripId}`);
   };
 
   return (
     <div className='relative min-h-screen flex items-center justify-center px-4 py-8 lg:px-8 font-body'>
       <div
         className='absolute inset-0 bg-cover bg-center'
-        style={{ backgroundImage: "url('/hero/backdrop.png')" }}
+        style={{ backgroundImage: "url('/hero/trips-hero-backdrop.webp')" }}
       />
       <div className='absolute inset-0 bg-white/10 backdrop-blur-[2px]' />
 
@@ -202,7 +206,7 @@ export default function CreateTripPage() {
                 <div className='space-y-3'>
                   <label className='text-sm font-semibold flex items-center gap-2'>
                     <Users className='h-4 w-4 text-primary' />
-                    Who’s going?
+                    Who's going?
                   </label>
 
                   <div className='grid grid-cols-2 gap-3'>
@@ -237,7 +241,7 @@ export default function CreateTripPage() {
                 <div className='space-y-3'>
                   <label className='text-sm font-semibold flex items-center gap-2'>
                     <Wallet className='h-4 w-4 text-primary' />
-                    Budget per person
+                    Budget
                   </label>
 
                   <div className='flex items-center h-14 rounded-xl border bg-background px-3 focus-within:ring-2 focus-within:ring-primary/20'>

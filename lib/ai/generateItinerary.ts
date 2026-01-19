@@ -16,12 +16,11 @@ type TripData = {
 /**
  * Creates a personalized travel itinerary using AI, then adds real-world locations
  * and addresses to each activity so you can see everything on a map.
- * 
+ *
  * @param tripData - All the trip details like destination, days, budget, etc.
  * @returns A complete itinerary with activities, descriptions, and location data
  */
 export async function generateItinerary(tripData: TripData) {
-  // Build the prompt
   const prompt = buildGenerationPrompt({
     destination: tripData.destination,
     days: tripData.days,
@@ -64,10 +63,9 @@ export async function generateItinerary(tripData: TripData) {
   try {
     enrichedContent = await enrichItineraryWithMaps(
       aiResponse.itinerary,
-      tripData.destination
+      tripData.destination,
     );
   } catch (error) {
-    // Log but continue with unenriched content
     console.error('Maps enrichment error:', error);
   }
 

@@ -111,9 +111,9 @@ export default function TripHeader({ trip }: { trip: any }) {
                       Duration
                     </span>
                   </div>
-                  <div className='font-heading text-xl font-bold'>
+                  <div className='font-heading text-xl font-extrabold'>
                     {trip.days}{' '}
-                    <span className='text-sm font-normal text-muted-foreground'>
+                    <span className='text-lg font-semibold text-foreground'>
                       Days
                     </span>
                   </div>
@@ -148,23 +148,11 @@ export default function TripHeader({ trip }: { trip: any }) {
 
               {/* Actions Area */}
               <div className='flex flex-col gap-3'>
-                <Link
-                  href={`/api/trips/${trip.id}`}
-                  tabIndex={-1}
-                  className='w-full'
-                >
-                  <Button className='w-full h-14 rounded-xl text-lg font-semibold shadow-lg shadow-primary/20 hover:shadow-primary/30 transition-all group/btn'>
-                    Continue Planning
-                    <ArrowRight className='ml-2 h-5 w-5 transition-transform group-hover/btn:translate-x-1' />
-                  </Button>
-                </Link>
-
                 {trip.status === 'GENERATED' && trip.itinerary && (
                   <Button
-                    variant='outline'
                     disabled={exporting}
                     onClick={handleExportPdf}
-                    className='w-full h-12 rounded-xl border-border bg-transparent hover:bg-background hover:text-foreground'
+                    className='w-full h-14 rounded-xl text-lg font-semibold shadow-lg shadow-primary/20 hover:shadow-primary/30 transition-all group/btn'
                   >
                     {exporting ? (
                       <span className='flex items-center gap-2'>

@@ -1,7 +1,8 @@
 'use client';
+import { useState } from 'react';
 import { useUser } from '@clerk/nextjs';
 import { Sparkles, Send, Globe, Plane, Landmark, Mountain } from 'lucide-react';
-import Router, { useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 
 const chips = [
   {
@@ -11,7 +12,7 @@ const chips = [
   },
   {
     icon: Plane,
-    label: 'Inspire My Next Escape',
+    label: 'Find Your Next Escape',
     color: 'from-green-500/20 to-green-500/10',
   },
   {
@@ -30,20 +31,60 @@ export default function Hero() {
   const { user } = useUser();
   const router = useRouter();
 
-  const onSend = () => {
+  const [input, setInput] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  const onSend = async () => {
+    if (!input.trim()) return;
+
     if (!user) {
       router.push('/sign-in');
       return;
     }
 
-    // else navigate to the dashboard
+    setLoading(true);
+
+    try {
+      const res = await fetch(`/api/trips/intent`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ input }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.message ?? 'REquest failed');
+      }
+
+      if (data.mode === 'GENERATED') {
+        if (!data.tripId) {
+          throw new Error('Trip ID missing from response');
+        }
+        router.push(`/trips/${data.tripId}`);
+        return;
+      }
+
+      if (data.mode === 'CREATE') {
+        router.push(data.redirect);
+        return;
+      }
+
+      if (data.mode === 'ERROR') {
+        console.warn(data.message);
+      }
+    } catch (error) {
+      console.error('Hero intent failed: ', error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <section className='relative min-h-[85vh] w-full flex flex-col justify-center items-center overflow-hidden pt-25'>
       {/* Background */}
       <img
-        src='/hero/backdrop.png'
+        src='/hero/marketing-hero-backdrop.webp'
         className='absolute inset-0 w-full h-full z-0 object-cover object-top contrast-[1.05] brightness-[1.02] '
         alt='Voyana Hero'
       />
@@ -78,13 +119,23 @@ export default function Hero() {
         <div className='w-full max-w-[700px] mx-auto mt-10'>
           <div className='relative bg-white/90 backdrop-blur-xl border border-border rounded-2xl shadow-md hover:shadow-lg p-5 transition-all hover:border-primary/40'>
             <textarea
-              placeholder="Tell Voyana your plan… e.g. 'Plan a 5-day trip to Paris from New York'"
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                  e.preventDefault();
+                  onSend();
+                }
+              }}
+              disabled={loading}
+              placeholder="Tell Voyana your plan… e.g. 'Plan a 5-day trip to Paris for a family'"
               className='w-full min-h-12 bg-transparent outline-none resize-none text-base text-foreground placeholder:text-foreground/50 leading-relaxed '
             />
 
             <button
               className='absolute right-5 top-1/2 -translate-y-1/2 bg-linear-to-br from-primary to-secondary text-white h-12 w-12 rounded-xl shadow-md hover:shadow-xl hover:scale-105 active:scale-95 flex items-center justify-center transition-all'
-              onClick={() => onSend()}
+              onClick={onSend}
+              disabled={loading}
             >
               <Send className='w-5 h-5' />
             </button>
