@@ -13,7 +13,7 @@ function ContactForm() {
   const [submitted, setSubmitted] = useState(false);
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -59,7 +59,9 @@ function ContactForm() {
               <Mail className='w-6 h-6 text-primary' />
             </div>
             <h3 className='text-foreground font-semibold mb-2'>Email</h3>
-            <p className='text-foreground/70 text-sm'>ceo@voyana.in</p>
+            <p className='text-foreground/70 text-sm'>
+              kumarharsh.connect@gmail.com
+            </p>
           </div>
           <div
             className='bg-card card-elegant  p-6 text-center animate-fadeInUp rounded-xl '
@@ -69,7 +71,7 @@ function ContactForm() {
               <Phone className='w-6 h-6 text-primary' />
             </div>
             <h3 className='text-foreground font-semibold mb-2'>Phone</h3>
-            <p className='text-foreground/70 text-sm'>(+91) 9999999999</p>
+            <p className='text-foreground/70 text-sm'>(+91) 9718823390</p>
           </div>
           <div
             className='bg-card card-elegant  p-6 text-center animate-fadeInUp rounded-xl '

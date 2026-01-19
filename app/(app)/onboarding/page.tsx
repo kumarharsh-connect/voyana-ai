@@ -2,20 +2,31 @@
 
 import { useUser } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
-import { Button } from '@/components/ui/button';
-import { Sparkles } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { Sparkles, Loader2 } from 'lucide-react';
 
 export default function OnboardingPage() {
   const { isLoaded, isSignedIn } = useUser();
   const router = useRouter();
+  const [isSyncing, setIsSyncing] = useState(true);
 
   useEffect(() => {
-    // Only sync once the user is fully loaded and signed in
     if (!isLoaded || !isSignedIn) return;
 
-    fetch('/api/auth/sync', { method: 'POST' }).catch(console.error);
-  }, [isLoaded, isSignedIn]);
+    const syncUser = async () => {
+      try {
+        await fetch('/api/auth/sync', { method: 'POST' });
+        router.replace('/trips/');
+      } catch (error) {
+        console.error('Sync failed:', error);
+        router.replace('/trips/');
+      } finally {
+        setIsSyncing(false);
+      }
+    };
+
+    syncUser();
+  }, [isLoaded, isSignedIn, router]);
 
   return (
     <div className='min-h-screen flex flex-col items-center justify-center px-6 bg-linear-to-b from-background to-muted/20'>
@@ -25,22 +36,14 @@ export default function OnboardingPage() {
         </div>
 
         <div className='space-y-3'>
-          <h1 className='text-4xl font-bold tracking-tight sm:text-5xl'>
-            Welcome to Voyana
+          <h1 className='text-3xl font-bold tracking-tight sm:text-4xl'>
+            Setting up your account...
           </h1>
-          <p className='text-muted-foreground text-lg leading-relaxed'>
-            Your AI-powered travel assistant is ready. Let&apos;s craft your
-            first personalized itinerary together.
+          <p className='text-muted-foreground text-lg leading-relaxed flex items-center justify-center gap-2'>
+            <Loader2 className='h-4 w-4 animate-spin' />
+            Preparing your travel dashboard
           </p>
         </div>
-
-        <Button
-          size='lg'
-          className='bg-linear-to-b from-primary to-secondary h-14 rounded-2xl px-8 text-base font-semibold shadow-xl shadow-primary/20 transition-all hover:-translate-y-1 hover:shadow-2xl'
-          onClick={() => router.push('/trips/create')}
-        >
-          Create Your First Trip
-        </Button>
       </div>
     </div>
   );

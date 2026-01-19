@@ -21,7 +21,7 @@ export default function EmptyState() {
       </div>
 
       {/* Action Button */}
-      <Link href='/onboarding' className='mt-10'>
+      <Link href='/trips/create' className='mt-10'>
         <Button
           size='lg'
           className='h-12 rounded-2xl px-10 text-base font-semibold bg-linear-to-r from-primary to-secondary shadow-xl shadow-primary/20 transition-all hover:-translate-y-1 hover:shadow-2xl hover:shadow-primary/30'

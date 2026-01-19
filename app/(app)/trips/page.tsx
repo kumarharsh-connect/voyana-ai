@@ -16,6 +16,7 @@ export default async function DashboardPage() {
   const trips = await getUserTrips(userId);
 
   const hasTrips = trips.length > 0;
+
   return (
     <section className='font-body px-6 py-8 max-w-7xl mx-auto space-y-8'>
       <DashboardHeader showCTA={hasTrips} />
