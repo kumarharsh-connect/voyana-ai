@@ -55,7 +55,6 @@ export async function createTrip(input: CreateTripInput) {
       maxBudget: resolvedMaxBudget,
       currency: resolvedCurrency,
       status: 'GENERATED',
-      mapsEnriched: true,
     },
   });
 
