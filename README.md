@@ -7,16 +7,40 @@ It goes beyond plain text by organizing trips into time-based activities, adding
 
 ---
 
-## 🚀 Features
+## ✨ Features
 
-- 🧠 **AI-generated itineraries** with structured JSON output  
-- ⏰ **Time-based planning** (Morning / Afternoon / Evening)  
-- 💡 **Local travel tips** for better on-ground experience  
-- 🗺️ **Map enrichment** with real-world geolocation data  
-- 📄 **PDF export** for offline and shareable itineraries  
-- 🔐 **Authentication & protected routes** (Clerk)  
-- 🚦 **Rate limiting** to prevent abuse  
-- ☁️ **Deployed on Vercel**
+- 🧠 **AI-Generated Itineraries**
+  - Day-wise activities
+  - Clear descriptions
+  - Balanced pacing
+
+- 🕒 **Time Blocked Plans**
+  - Morning / Afternoon / Evening segmentation
+  - Improves readability & planning
+
+- 💡 **Local Travel Tips**
+  - One practical, location-specific tip per day
+
+- 🗺️ **Map-Enriched Activities**
+  - Real latitude/longitude
+  - Accurate addresses
+  - Distance validation from destination
+
+- 📄 **One-Click PDF Export**
+  - Professionally styled itinerary PDFs
+  - Includes overview, time blocks & local tips
+
+- 🔐 **Authentication**
+  - Powered by Clerk
+  - Secure user-specific trips
+
+- ⚡ **Rate Limiting**
+  - Protects AI endpoints from abuse
+
+- 🎨 **Modern UI/UX**
+  - Tailwind CSS
+  - Component-driven design
+  - Smooth transitions & loading states
 
 ---
 
@@ -68,20 +92,68 @@ This multi-step pipeline ensures **reliable AI outputs** and a strong user exper
 
 ## 📂 Project Structure (Simplified)
 
-src/
-├── app/ # App router pages & layouts
-├── components/ # Reusable UI components
-├── lib/
-│ ├── ai/ # AI prompts & enrichment logic
-│ ├── maps/ # Geocoding & distance logic
-│ ├── prisma/ # Prisma client
-│ ├── rate-limit/ # Redis rate limiting
-│ └── actions/ # Server actions
-├── styles/ # Global styles
-└── utils/ # Helpers & formatters
+app/
 
-yaml
-Copy code
+├── (app)          # Authenticated app routes (trips, onboarding, dashboard)
+
+├── (auth)         # Authentication routes (Clerk)
+
+├── (marketing)    # Landing & marketing pages
+
+├── api/            # Backend API routes
+
+├── layout.tsx      # Root layout
+
+├── loading.tsx     # Global loading state
+
+├── not-found.tsx   # 404 page
+
+└── globals.css     # Global styles
+
+
+lib/
+
+├── ai/             # AI prompts, itinerary generation & enrichment
+
+├── actions/        # Server actions (PDF export, trip actions)
+
+├── maps/           # Geocoding & map enrichment logic
+
+├── pdf/            # PDF generation logic
+
+├── trips/          # Trip-related business logic
+
+├── format/         # Formatting helpers
+
+├── guards/         # Auth & access guards
+
+├── queries/        # Database queries
+
+├── ui/             # Shared UI helpers
+
+├── prisma.ts       # Prisma client
+
+├── rate-limit.ts   # API rate limiting
+
+└── utils.ts        # Utility helpers
+
+
+prisma/
+
+└── schema.prisma   # Database schema
+
+
+public/
+
+├── hero/           # Landing page assets
+
+├── feature/        # Feature illustrations
+
+├── destinations/  # Destination images
+
+├── steps/          # Onboarding visuals
+
+└── ui/             # UI assets
 
 ---
 
@@ -109,15 +181,14 @@ MUX_TOKEN_SECRET=
 ⚠️ Authentication is intentionally kept in development mode since this is a portfolio project.
 
 🛠️ Running Locally
-bash
-Copy code
-# Install dependencies
+git clone https://github.com/your-username/voyana-ai.git
+cd voyana-ai
+
 npm install
-
-# Generate Prisma client
 npx prisma generate
+npx prisma migrate dev
 
-# Run dev server
 npm run dev
 App will be available at:
 👉 http://localhost:3000
+
