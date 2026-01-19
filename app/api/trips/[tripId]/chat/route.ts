@@ -1,3 +1,4 @@
+export const runtime = 'nodejs';
 import { assertTripCanChat } from '@/lib/guards/tripChatGuard';
 import { getAuthorizedTrip } from '@/lib/guards/tripGuard';
 import { prisma } from '@/lib/prisma';
@@ -6,6 +7,7 @@ import { NextResponse } from 'next/server';
 import { openai } from '@/lib/ai/openai';
 import { SYSTEM_PROMPT } from '@/lib/ai/systemPrompt';
 import { buildChatPrompt } from '@/lib/ai/chatPromptBuilder';
+import { aiLimiter } from '@/lib/rate-limit';
 
 type ItineraryContent = {
   overview?: any;
@@ -15,7 +17,7 @@ type ItineraryContent = {
 
 function mergeItineraryPreservingLocations(
   oldItinerary: any,
-  newItinerary: any
+  newItinerary: any,
 ) {
   const locationMap = new Map<string, any>();
   for (const day of oldItinerary?.days ?? []) {
@@ -40,7 +42,7 @@ function mergeItineraryPreservingLocations(
 
 export async function POST(
   req: Request,
-  { params }: { params: Promise<{ tripId: string }> }
+  { params }: { params: Promise<{ tripId: string }> },
 ) {
   try {
     const { tripId } = await params;
@@ -113,7 +115,7 @@ export async function POST(
 
     const mergedItinerary = mergeItineraryPreservingLocations(
       existingContent,
-      aiResponse.itinerary
+      aiResponse.itinerary,
     );
 
     const updatedItinerary = await prisma.itinerary.update({

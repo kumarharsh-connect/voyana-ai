@@ -3,14 +3,22 @@ import { auth } from '@clerk/nextjs/server';
 import { prisma } from '@/lib/prisma';
 
 import { createTrip } from '@/lib/trips/createTrip';
+import { rateLimiter } from '@/lib/rate-limit';
 import { fetchDestinationImage } from '@/lib/images/unsplash';
 import { generateItinerary } from '@/lib/ai/generateItinerary';
+
+export const runtime = 'nodejs';
 
 export async function POST(req: Request) {
   const { userId } = await auth();
   if (!userId) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
+
+  const ip = req.headers.get('x-forwarded-for') ?? 'anonymous';
+
+  const identifier = userId ?? ip;
+  const { success } = await rateLimiter.limit(identifier);
 
   const body = await req.json();
 
