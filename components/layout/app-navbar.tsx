@@ -38,7 +38,7 @@ export default function AppNavbar() {
       <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'>
         <div className='flex h-18 items-center justify-between'>
           {/* Logo */}
-          <Link href='/trips' className='flex items-center gap-2'>
+          <Link href='/' className='flex items-center gap-2'>
             <span className='font-heading font-bold text-4xl'>
               <span className='text-primary'>Voyana </span>AI
             </span>
