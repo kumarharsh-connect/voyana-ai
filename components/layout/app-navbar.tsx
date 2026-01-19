@@ -1,9 +1,15 @@
 'use client';
+import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import { Button } from '../ui/button';
-import { UserButton, ClerkLoaded } from '@clerk/nextjs';
+import { ClerkLoaded } from '@clerk/nextjs';
 import { Plus } from 'lucide-react';
+
+const UserButton = dynamic(
+  () => import('@clerk/nextjs').then((mod) => mod.UserButton),
+  { ssr: false },
+);
 
 export default function AppNavbar() {
   const navOptions = [{ number: 1, name: 'My Trips', path: '/trips' }];
@@ -32,7 +38,7 @@ export default function AppNavbar() {
       className={`w-full fixed top-0 inset-x-0 z-50 transition-all ease-out duration-500 font-body ${
         isScrolled
           ? 'bg-background/80 backdrop-blur-sm shadow-sm'
-          : 'bg-transparent shadow none'
+          : 'bg-background/90 shadow-sm'
       }`}
     >
       <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'>

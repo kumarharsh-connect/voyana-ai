@@ -2,6 +2,7 @@ import { openai } from './openai';
 import { GENERATION_SYSTEM_PROMPT } from './generationSystemPrompt';
 import { buildGenerationPrompt } from './generationPromptBuilder';
 import { enrichItineraryWithMaps } from '@/lib/maps/enrichItineraryWithMaps';
+import { enrichItineraryUX } from './enrichItineraryUX';
 
 type TripData = {
   destination: string;
@@ -14,13 +15,11 @@ type TripData = {
 };
 
 /**
- * Creates a personalized travel itinerary using AI, then adds real-world locations
- * and addresses to each activity so you can see everything on a map.
- *
- * @param tripData - All the trip details like destination, days, budget, etc.
- * @returns A complete itinerary with activities, descriptions, and location data
- */
+ * @param tripData
+ * @returns
+ **/
 export async function generateItinerary(tripData: TripData) {
+  // Base generation
   const prompt = buildGenerationPrompt({
     destination: tripData.destination,
     days: tripData.days,
@@ -31,7 +30,6 @@ export async function generateItinerary(tripData: TripData) {
     currency: tripData.currency,
   });
 
-  // Call OpenAI
   const completion = await openai.chat.completions.create({
     model: 'gpt-4o-mini',
     temperature: 0.4,
@@ -41,33 +39,48 @@ export async function generateItinerary(tripData: TripData) {
     ],
   });
 
-  // Parse AI response
   const aiText = completion.choices[0]?.message?.content;
   if (!aiText) {
     throw new Error('AI_EMPTY_RESPONSE');
   }
 
-  let aiResponse;
+  let baseItinerary;
   try {
-    aiResponse = JSON.parse(aiText);
+    const parsed = JSON.parse(aiText);
+    baseItinerary =
+      parsed?.itinerary && Array.isArray(parsed.itinerary.days)
+        ? parsed.itinerary
+        : parsed;
+
+    if (!Array.isArray(baseItinerary?.days)) {
+      throw new Error('AI_INVALID_RESPONSE');
+    }
   } catch {
     throw new Error('AI_INVALID_JSON');
   }
 
-  if (!aiResponse?.itinerary) {
+  if (!baseItinerary?.days) {
     throw new Error('AI_INVALID_RESPONSE');
   }
 
   // Enrich with maps (locations)
-  let enrichedContent: any = aiResponse.itinerary;
+  let withMaps: any = baseItinerary;
   try {
-    enrichedContent = await enrichItineraryWithMaps(
-      aiResponse.itinerary,
+    withMaps = await enrichItineraryWithMaps(
+      baseItinerary,
       tripData.destination,
     );
   } catch (error) {
     console.error('Maps enrichment error:', error);
   }
 
-  return enrichedContent;
+  let finalItinerary = withMaps;
+  try {
+    finalItinerary = await enrichItineraryUX(withMaps);
+  } catch (error) {
+    console.error('UX enrichment error:', error);
+  }
+
+  // final result
+  return finalItinerary;
 }

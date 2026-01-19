@@ -4,18 +4,25 @@ const MAX_DISTANCE_KM = 50;
 
 export async function enrichItineraryWithMaps(
   itinerary: any,
-  destination: string
+  destination: string,
 ) {
+  const normalized = itinerary?.normalized ?? itinerary;
+
+  if (!Array.isArray(normalized?.days)) {
+    console.warn('[Maps] Invalid normalized shape, skipping');
+    return normalized;
+  }
+
   const destinationLocation = await geocodePlace(destination);
 
   if (!destinationLocation) {
     // skip map when no geocode
-    return itinerary;
+    return normalized;
   }
 
   const enrichedDays = [];
 
-  for (const day of itinerary.days) {
+  for (const day of normalized.days) {
     const enrichedActivities = [];
 
     for (const activity of day.activities) {
@@ -36,7 +43,7 @@ export async function enrichItineraryWithMaps(
           destinationLocation.lat,
           destinationLocation.lng,
           location.lat,
-          location.lng
+          location.lng,
         );
 
         if (dist <= MAX_DISTANCE_KM) {
@@ -58,7 +65,7 @@ export async function enrichItineraryWithMaps(
   }
 
   return {
-    ...itinerary,
+    ...normalized,
     days: enrichedDays,
   };
 }

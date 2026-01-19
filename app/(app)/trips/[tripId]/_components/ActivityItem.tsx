@@ -1,4 +1,4 @@
-import { Clock, MapPin } from 'lucide-react';
+import { MapPin } from 'lucide-react';
 
 export default function ActivityItem({
   activity,
@@ -19,19 +19,12 @@ export default function ActivityItem({
           {activity.name}
         </h3>
 
-        {activity.time && (
-          <div className='flex items-center gap-2 text-sm text-muted-foreground'>
-            <Clock className='h-3.5 w-3.5' />
-            {activity.time}
-          </div>
-        )}
-
         {activity.description && (
           <p className='text-sm text-muted-foreground leading-relaxed'>
             {activity.description}
           </p>
         )}
-        {activity.location && (
+        {activity.location?.address && (
           <div className='flex items-center gap-2 text-xs text-muted-foreground'>
             <MapPin className='h-3.5 w-3.5' />
             {activity.location.address}
