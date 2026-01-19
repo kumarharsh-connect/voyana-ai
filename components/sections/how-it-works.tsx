@@ -26,7 +26,7 @@ const steps = [
 
 export default function HowItWorks() {
   return (
-    <section className='relative bg-background pt-20 pb-24 px-4'>
+    <section className='relative bg-background pt-20 pb-24 px-4' id='explore'>
       <div className='max-w-6xl mx-auto'>
         {/* Header */}
         <div className='text-center mb-20'>

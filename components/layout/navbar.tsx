@@ -8,7 +8,7 @@ function Navbar() {
   const navOptions = [
     { number: 1, name: 'Home', path: '/' },
     { number: 2, name: 'Features', path: '/#features' },
-    { number: 3, name: 'Pricing', path: '/#pricing' },
+    { number: 3, name: 'Explore', path: '/#explore' },
     { number: 4, name: 'Contact', path: '/#contact' },
   ];
 

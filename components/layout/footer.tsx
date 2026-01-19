@@ -180,7 +180,7 @@ export default function Footer() {
           </div>
 
           <div className='border-t border-background/20 pt-8 flex flex-col md:flex-row md:justify-between md:items-center gap-4 text-sm text-background/70'>
-            <p>&copy; 2025 Voyana AI. All rights reserved.</p>
+            <p>&copy; 2026 Voyana AI. All rights reserved.</p>
             <p>Crafted by Harsh with love</p>
           </div>
         </div>
