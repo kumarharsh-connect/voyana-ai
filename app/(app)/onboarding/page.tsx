@@ -26,7 +26,7 @@ export default function OnboardingPage() {
     };
 
     syncUser();
-  }, [isLoaded, isSignedIn, router]);
+  }, [isLoaded, isSignedIn]);
 
   return (
     <div className='min-h-screen flex flex-col items-center justify-center px-6 bg-linear-to-b from-background to-muted/20'>

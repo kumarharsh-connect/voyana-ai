@@ -2,18 +2,10 @@ import Link from 'next/link';
 import { useState } from 'react';
 
 import { Button } from '@/components/ui/button';
-import {
-  MapPin,
-  Download,
-  Calendar,
-  Users,
-  Wallet,
-  ChevronLeft,
-} from 'lucide-react';
+import { MapPin, Download, Calendar, Users, Wallet } from 'lucide-react';
 
 import { formatBudget } from '@/lib/format/budget';
 import { getDestinationInitials } from '@/lib/format/text';
-import { getStatusColor } from '@/lib/ui/trip';
 import { exportTripPdf } from '@/lib/actions/exportPdf';
 
 export default function TripHeader({ trip }: { trip: any }) {
@@ -44,7 +36,7 @@ export default function TripHeader({ trip }: { trip: any }) {
           <img
             src={trip.coverImageUrl}
             alt={trip.destination}
-            className='h-full w-full object-cover object-center transition-transform duration-700 group-hover:scale-105'
+            className='w-full h-full object-cover object-center transition-transform duration-700 group-hover:scale-105'
           />
         ) : (
           <div className='flex h-full w-full items-center justify-center bg-linear-to-br from-primary/5 via-primary/10 to-secondary/5'>
@@ -53,26 +45,7 @@ export default function TripHeader({ trip }: { trip: any }) {
             </div>
           </div>
         )}
-        <div className='absolute inset-0 bg-linear-to-t from-background via-transparent to-black/20' />
-
-        <div className='absolute top-6 inset-x-0 px-4 sm:px-6 flex items-center justify-between max-w-7xl mx-auto w-full'>
-          <Link
-            href='/trips'
-            className='group flex items-center gap-2 rounded-full border border-white/20 bg-black/20 backdrop-blur-md px-4 py-2 text-sm font-medium text-white hover:bg-white hover:text-black transition-all'
-          >
-            <ChevronLeft className='h-4 w-4 transition-transform group-hover:-translate-x-1' />
-            <span>Back to trips</span>
-          </Link>
-
-          <div
-            className={`flex items-center gap-2 rounded-full px-4 py-1.5 text-[11px] font-bold uppercase tracking-wider backdrop-blur-md border shadow-lg ${getStatusColor(
-              trip.status,
-            )}`}
-          >
-            <span className='h-2 w-2 rounded-full bg-current animate-pulse' />
-            {trip.status}
-          </div>
-        </div>
+        <div className='absolute inset-0 bg-linear-to-b from-transparent via-transparent to-background' />
       </div>
 
       <div className='relative z-10 -mt-20 max-w-7xl mx-auto px-4 sm:px-6 pb-12'>

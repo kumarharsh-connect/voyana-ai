@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { Button } from '../ui/button';
 import { useEffect, useState } from 'react';
 import { SignInButton, UserButton, SignedIn, SignedOut } from '@clerk/nextjs';
+import { Menu, X } from 'lucide-react';
 
 function Navbar() {
   const navOptions = [
@@ -13,6 +14,13 @@ function Navbar() {
   ];
 
   const [isScrolled, setIsScrolled] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  useEffect(() => {
+    if (menuOpen) {
+      setMenuOpen(false);
+    }
+  }, [isScrolled]);
 
   useEffect(() => {
     let ticking = false;
@@ -48,16 +56,16 @@ function Navbar() {
             </h2>
           </div>
           {/* Nav Links */}
-          <div className='flex items-center gap-6'>
-            {navOptions.map((options) => (
-              <Link href={options.path} key={options.number}>
+          <div className='hidden md:flex items-center gap-6'>
+            {navOptions.map((option) => (
+              <Link href={option.path} key={option.number}>
                 <h2 className='text-foreground text-sm lg:text-md hover:cursor-pointer hover:scale-105 hover:text-accent'>
-                  {options.name}
+                  {option.name}
                 </h2>
               </Link>
             ))}
           </div>
-          <div className='flex items-center gap-6 '>
+          <div className='hidden md:flex items-center gap-4 '>
             {/* Logged In */}
             <SignedOut>
               <SignInButton mode='modal'>
@@ -70,7 +78,7 @@ function Navbar() {
             {/* Logged Out */}
             <SignedIn>
               <div className='flex items-center gap-4'>
-                <Link href='/trips'>
+                <Link href='/onboarding'>
                   <Button
                     variant='secondary'
                     className='rounded-xl font-medium'
@@ -90,8 +98,56 @@ function Navbar() {
               </div>
             </SignedIn>
           </div>
+
+          {/* Mobile Menu Button  */}
+          <button
+            onClick={() => setMenuOpen(!menuOpen)}
+            className='md:hidden p-2 rounded-lg hover:bg-muted transition'
+          >
+            {menuOpen ? <X size={22} /> : <Menu size={22} />}
+          </button>
         </div>
       </div>
+
+      {/* Mobile Menu */}
+
+      {menuOpen && (
+        <div className='md:hidden bg-background/95 backdrop-blur-lg border-t border-border'>
+          <div className='px-4 py-6 space-y-6'>
+            {navOptions.map((option) => (
+              <Link
+                key={option.number}
+                href={option.path}
+                onClick={() => setMenuOpen(false)}
+                className='block text-lg font-medium text-foreground'
+              >
+                {option.name}
+              </Link>
+            ))}
+
+            <div className='pt-4 border-t border-border space-y-4'>
+              <SignedOut>
+                <SignInButton mode='modal'>
+                  <Button className='w-full rounded-xl bg-linear-to-br from-primary to-secondary text-white'>
+                    Get Started
+                  </Button>
+                </SignInButton>
+              </SignedOut>
+
+              <SignedIn>
+                <Link href='/onboarding' onClick={() => setMenuOpen(false)}>
+                  <Button variant='secondary' className='w-full rounded-xl'>
+                    My Trips
+                  </Button>
+                </Link>
+                <div className='flex justify-center pt-2'>
+                  <UserButton />
+                </div>
+              </SignedIn>
+            </div>
+          </div>
+        </div>
+      )}
     </nav>
   );
 }

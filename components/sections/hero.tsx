@@ -81,20 +81,20 @@ export default function Hero() {
   };
 
   return (
-    <section className='relative min-h-[85vh] w-full flex flex-col justify-center items-center overflow-hidden pt-25'>
+    <section className='relative min-h-dvh md:min-h-[85dvh] w-full flex flex-col justify-center items-center overflow-hidden pt-10 md:pt-28'>
       {/* Background */}
       <img
         src='/hero/marketing-hero-backdrop.webp'
-        className='absolute inset-0 w-full h-full z-0 object-cover object-top contrast-[1.05] brightness-[1.02] '
+        className='absolute inset-0 w-full h-full z-0 object-cover md:object-top contrast-[1.05] brightness-[1.02] '
         alt='Voyana Hero'
       />
 
-      <div className='absolute inset-0 h-screen bg-linear-to-t from-[#FFFAF5] via-transparent via-30% to-transparent' />
+      <div className='absolute inset-0 h-full bg-linear-to-t from-[#FFFAF5] via-transparent via-40% md:via-30% to-transparent' />
 
       {/* Content */}
-      <div className='relative z-10 max-w-5xl mx-auto text-center px-4 animate-fadeInUp mb-12'>
+      <div className='relative z-10 max-w-5xl mx-auto text-center px-4 sm:px-6 animate-fadeInUp mb-12 space-y-8 md:space-y-0'>
         {/* Badge */}
-        <div className='inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/20 border border-primary/20 backdrop-blur-sm'>
+        <div className=' inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/20 border border-primary/20 backdrop-blur-sm'>
           <Sparkles className='w-3 h-3 text-primary' />
           <span className='text-xs tracking wide font-medium text-foreground'>
             AI-Powered Trip Planning
@@ -102,7 +102,7 @@ export default function Hero() {
         </div>
 
         {/* Headline */}
-        <h1 className='mt-6 font-heading text-5xl md:text-6xl font-extrabold text-foreground leading-tight'>
+        <h1 className='md:mt-6 mt-10 font-heading text-5xl md:text-6xl font-extrabold text-foreground leading-tight'>
           Your Next Trip,
           <span className='block text-transparent bg-clip-text bg-linear-to-r from-primary via-primary/80 to-secondary'>
             Designed in Seconds
@@ -116,8 +116,8 @@ export default function Hero() {
         </p>
 
         {/* Query Box */}
-        <div className='w-full max-w-[700px] mx-auto mt-10'>
-          <div className='relative bg-white/90 backdrop-blur-xl border border-border rounded-2xl shadow-md hover:shadow-lg p-5 transition-all hover:border-primary/40'>
+        <div className='w-full max-w-2xl mx-auto mt-8 md:mt-10 px-2 sm:px-0'>
+          <div className='relative bg-white/90 backdrop-blur-xl border border-border rounded-2xl shadow-md hover:shadow-lg p-3 md:p-5 transition-all hover:border-primary/40'>
             <textarea
               value={input}
               onChange={(e) => setInput(e.target.value)}
@@ -129,33 +129,33 @@ export default function Hero() {
               }}
               disabled={loading}
               placeholder="Tell Voyana your plan… e.g. 'Plan a 5-day trip to Paris for a family'"
-              className='w-full min-h-12 bg-transparent outline-none resize-none text-base text-foreground placeholder:text-foreground/50 leading-relaxed '
+              className='w-full  min-h-25 md:min-h-12  bg-transparent outline-none resize-none text-base text-foreground placeholder:text-foreground/50 leading-relaxed pr-14 md:pr-16'
             />
 
             <button
-              className='absolute right-5 top-1/2 -translate-y-1/2 bg-linear-to-br from-primary to-secondary text-white h-12 w-12 rounded-xl shadow-md hover:shadow-xl hover:scale-105 active:scale-95 flex items-center justify-center transition-all'
+              className='absolute right-3 bottom-3 md:top-1/2 md:-translate-y-1/2 bg-linear-to-br from-primary to-secondary text-white h-10 w-10 md:h-12 md:w-12 rounded-xl shadow-md hover:shadow-xl hover:scale-105 active:scale-95 flex items-center justify-center transition-all disabled:opacity-50'
               onClick={onSend}
               disabled={loading}
             >
-              <Send className='w-5 h-5' />
+              <Send className='w-4 h-4 md:w-5 md:h-5' />
             </button>
           </div>
 
           {/* Quick Action Chips */}
-          <div className='flex justify-center flex-wrap gap-4 mt-8'>
+          <div className='flex justify-center flex-wrap gap-2 md:gap-4 mt-6 md:mt-8'>
             {chips.map((chip, idx) => {
               const Icon = chip.icon;
               return (
                 <button
                   key={idx}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-full text-xs font-medium
+                  className={`flex items-center gap-2 px-3 py-2
+                  md:px-4 md:py-2 rounded-full text-[10px] md:text-xs font-medium
                   bg-linear-to-br ${chip.color}
                   border border-white/40 backdrop-blur-sm
                   shadow-sm hover:shadow-lg
-                  opacity-100
                   hover:border-primary/40 hover:scale-[1.05]
                   transition-all duration-300
-                  text-foreground`}
+                  text-foreground whitespace-nowrap`}
                 >
                   <Icon className='w-3 h-3 shrink-0 opacity-70 group-hover:opacity-100' />
                   {chip.label}

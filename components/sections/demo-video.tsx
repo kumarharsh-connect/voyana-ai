@@ -16,7 +16,7 @@ export default function DemoVideo() {
         </div>
 
         <div
-          className='rounded-4xl overflow-hidden flex justify-center animate-fadeInUp max-w-[50vw] mx-auto'
+          className='rounded-4xl overflow-hidden flex justify-center animate-fadeInUp max-w-[90vw] md:max-w-[50vw] mx-auto'
           style={{ animationDelay: '150ms' }}
         >
           <NextVideo
