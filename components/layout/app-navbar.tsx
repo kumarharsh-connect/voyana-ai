@@ -66,11 +66,11 @@ export default function AppNavbar() {
           <div className='flex items-center gap-4'>
             <Button
               asChild
-              className='rounded-xl bg-linear-to-br from-primary to-secondary text-white'
+              className='rounded-xl bg-background border border-primary text-primary md:bg-linear-to-br md:from-primary md:to-secondary md:text-white'
             >
               <Link href='/trips/create'>
-                <Plus className='mr-1 h-4 w-4' />
-                Create Trip
+                <Plus className='md:mr-1 h-4 w-4' />
+                <span className='hidden md:block'>Create Trip</span>
               </Link>
             </Button>
 

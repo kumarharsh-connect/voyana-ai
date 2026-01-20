@@ -3,6 +3,7 @@
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
+import toast from 'react-hot-toast';
 import {
   Users,
   Gauge,
@@ -55,28 +56,49 @@ export default function CreateTripPage() {
   const handleCreateTrip = async () => {
     if (!destination) return;
 
+    const normalizedGroupType = groupType.toLowerCase();
+
     setLoading(true);
 
-    const res = await fetch('/api/trips', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        destination,
-        days,
-        groupType: groupType.toLowerCase(),
-        pace,
-        currency,
-        minBudget: minBudget ? Number(minBudget) : null,
-        maxBudget: maxBudget ? Number(maxBudget) : null,
-      }),
-    });
+    try {
+      const res = await fetch('/api/trips', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          destination,
+          days,
+          groupType: normalizedGroupType,
+          pace,
+          currency,
+          minBudget: minBudget ? Number(minBudget) : null,
+          maxBudget: maxBudget ? Number(maxBudget) : null,
+        }),
+      });
 
-    const data = await res.json();
-    if (!res.ok || !data.tripId) {
-      console.error(data);
-      throw new Error(data.error ?? 'Trip creation failed');
+      const data = await res.json();
+      if (!res.ok || !data.tripId) {
+        if (res.status === 429) {
+          toast.error(
+            data.error ??
+              'AI is busy right now. Please try again in a few minutes.',
+          );
+          setTimeout(() => setLoading(false), 3000);
+          return;
+        }
+
+        toast.error(data.error ?? 'Failed to generate trip.');
+        setLoading(false);
+        return;
+      }
+
+      toast.success('Trip created successfully');
+      router.push(`/trips/${data.tripId}`);
+    } catch (error) {
+      console.error(error);
+      toast.error('Something went wrong. Please try again.');
+    } finally {
+      setLoading(false);
     }
-    router.push(`/trips/${data.tripId}`);
   };
 
   return (

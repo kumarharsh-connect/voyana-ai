@@ -64,6 +64,17 @@ export async function POST(req: Request) {
       pace: trip.pace,
     });
   } catch (error: any) {
+    if (
+      error?.status === 429 ||
+      error?.code === 'rate_limit_exceeded' ||
+      error?.message?.includes('Rate limit')
+    ) {
+      return NextResponse.json(
+        { error: 'AI is currently busy. Please try again in a few minutes.' },
+        { status: 429 },
+      );
+    }
+
     if (error.message === 'AI_EMPTY_RESPONSE') {
       return new NextResponse('AI did not respond', { status: 502 });
     }

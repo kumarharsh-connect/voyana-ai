@@ -103,8 +103,8 @@ export default function TripHeader({ trip }: { trip: any }) {
                       Budget
                     </span>
                   </div>
-                  <div className='text-xl font-bold text-foreground'>
-                    {budgetText || 'N/A'}
+                  <div className='text-lg md:text-xl font-bold text-foreground'>
+                    {budgetText || 'Balanced'}
                   </div>
                 </div>
               </div>

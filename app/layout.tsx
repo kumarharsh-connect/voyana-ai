@@ -3,6 +3,7 @@ import './globals.css';
 import type { Metadata } from 'next';
 import { Playfair_Display, Sora } from 'next/font/google';
 import { ClerkProvider } from '@clerk/nextjs';
+import { Toaster } from 'react-hot-toast';
 
 const playfair = Playfair_Display({
   subsets: ['latin'],
@@ -33,6 +34,7 @@ export default function RootLayout({
           suppressHydrationWarning={true}
         >
           {children}
+          <Toaster position='top-center' reverseOrder={false} />
         </body>
       </html>
     </ClerkProvider>

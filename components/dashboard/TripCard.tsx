@@ -18,6 +18,7 @@ import { formatBudget } from '@/lib/format/budget';
 import { getGroupTypeLabel, getDestinationInitials } from '@/lib/format/text';
 import { getStatusColor } from '@/lib/ui/trip';
 import { exportTripPdf } from '@/lib/actions/exportPdf';
+import toast from 'react-hot-toast';
 
 type TripCardProps = {
   trip: {
@@ -45,9 +46,11 @@ async function deletetrip(tripId: string) {
   });
 
   if (!res.ok) {
-    alert('Failed to delete trip');
+    toast.error('Failed to delete trip');
     return;
   }
+
+  toast.success('Trip deleted successfully.');
 
   window.location.reload();
 }

@@ -141,6 +141,18 @@ export async function POST(
       reply: aiResponse.reply,
     });
   } catch (error: any) {
+    if (
+      error?.status === 429 ||
+      error?.code === 'rate_limit_exceeded' ||
+      error?.message?.includes('Rate limit')
+    ) {
+      return NextResponse.json(
+        {
+          error: 'AI is temporarily rate-limited. Please retry shortly.',
+        },
+        { status: 429 },
+      );
+    }
     if (error.message === 'UNAUTHORIZED') {
       return new NextResponse('Unauthorized', { status: 401 });
     }
