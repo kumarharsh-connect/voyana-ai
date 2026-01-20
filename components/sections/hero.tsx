@@ -54,7 +54,7 @@ export default function Hero() {
       const data = await res.json();
 
       if (!res.ok) {
-        throw new Error(data.message ?? 'REquest failed');
+        throw new Error(data.message ?? 'Request failed');
       }
 
       if (data.mode === 'GENERATED') {
@@ -81,7 +81,7 @@ export default function Hero() {
   };
 
   return (
-    <section className='relative min-h-dvh md:min-h-[85dvh] w-full flex flex-col justify-center items-center overflow-hidden pt-10 md:pt-28'>
+    <section className='relative min-h-dvh md:min-h-[85dvh] w-full flex flex-col justify-center items-center overflow-hidden pt-22 md:pt-28'>
       {/* Background */}
       <img
         src='/hero/marketing-hero-backdrop.webp'
