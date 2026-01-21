@@ -15,7 +15,12 @@ export async function POST(req: Request) {
 
   const ip = req.headers.get('x-forwarded-for') ?? 'anonymous';
   const identifier = userId ?? ip;
+
+  // Rate limiting check
   const { success } = await rateLimiter.limit(identifier);
+  if (!success) {
+    return NextResponse.json({ error: 'Too many requests' }, { status: 429 });
+  }
 
   const body = await req.json();
 
@@ -26,56 +31,43 @@ export async function POST(req: Request) {
     );
   }
 
-  if (body.minBudget && body.maxBudget && body.minBudget > body.maxBudget) {
-    return NextResponse.json(
-      { error: 'Invalid budget range' },
-      { status: 400 },
-    );
-  }
+  let coverImageUrl: string | undefined;
 
   try {
-    let coverImageUrl: string | undefined;
-    try {
-      coverImageUrl = await fetchDestinationImage(body.destination);
-    } catch (imageError) {
-      console.warn('Failed to fetch destination image:', imageError);
-    }
-
-    const trip = await prisma.trip.create({
-      data: {
-        user: { connect: { clerkId: userId } },
-        title: body.title ?? `Trip to ${body.destination}`,
+    const [imageUrl, enrichedContent] = await Promise.all([
+      fetchDestinationImage(body.destination).catch((err) => {
+        console.warn('Image fetch failed', err);
+        return undefined;
+      }),
+      generateItinerary({
         destination: body.destination,
         days: body.days,
         groupType: body.groupType ?? 'solo',
-        pace: body.pace ?? 'balanced',
         minBudget: body.minBudget,
         maxBudget: body.maxBudget,
-        status: 'GENERATED',
-        coverImageUrl,
-      },
-    });
+        currency: body.currency || 'USD',
+        pace: body.pace ?? 'balanced',
+      }),
+    ]);
 
-    let enrichedContent;
-    try {
-      enrichedContent = await generateItinerary({
-        destination: trip.destination,
-        days: trip.days,
-        groupType: trip.groupType,
-        minBudget: trip.minBudget,
-        maxBudget: trip.maxBudget,
-        currency: trip.currency || 'INR',
-        pace: trip.pace,
-      });
-    } catch (aiError: any) {
-      await prisma.trip.update({
-        where: { id: trip.id },
-        data: { status: 'DRAFT' },
-      });
-      throw aiError;
-    }
-
+    coverImageUrl = imageUrl;
     const result = await prisma.$transaction(async (tx) => {
+      // Create the Trip
+      const trip = await tx.trip.create({
+        data: {
+          user: { connect: { clerkId: userId } },
+          title: body.title ?? `Trip to ${body.destination}`,
+          destination: body.destination,
+          days: body.days,
+          groupType: body.groupType ?? 'solo',
+          pace: body.pace ?? 'balanced',
+          minBudget: body.minBudget,
+          maxBudget: body.maxBudget,
+          status: 'GENERATED',
+          coverImageUrl: coverImageUrl,
+        },
+      });
+
       const itinerary = await tx.itinerary.create({
         data: {
           tripId: trip.id,
@@ -85,18 +77,14 @@ export async function POST(req: Request) {
         },
       });
 
-      await tx.trip.update({
-        where: { id: trip.id },
-        data: { status: 'GENERATED' },
-      });
-
-      return itinerary;
+      return { trip, itinerary };
     });
 
-    return NextResponse.json({ tripId: trip.id });
+    return NextResponse.json({ tripId: result.trip.id });
   } catch (error: any) {
     console.error('Error in trip generation flow:', error);
 
+    // AI Rate Limit Handling
     if (
       error?.status === 429 ||
       error?.code === 'rate_limit_exceeded' ||
@@ -115,18 +103,8 @@ export async function POST(req: Request) {
       );
     }
 
-    const aiErrors: Record<string, string> = {
-      AI_EMPTY_RESPONSE: 'AI did not respond',
-      AI_INVALID_JSON: 'AI returned invalid JSON',
-      AI_INVALID_RESPONSE: 'AI returned invalid response',
-    };
-
-    if (aiErrors[error.message]) {
-      return new NextResponse(aiErrors[error.message], { status: 502 });
-    }
-
     return NextResponse.json(
-      { error: 'Internal Server Error' },
+      { error: 'Failed to generate trip. Please try again.' },
       { status: 500 },
     );
   }

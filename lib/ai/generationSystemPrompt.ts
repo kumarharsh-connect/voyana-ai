@@ -113,9 +113,9 @@ SCHEMA:
       "day": number,
       "activities": [{
         "name": "string", 
-        "description": "string (max 20 words)", 
+        "description": "string", 
         "timeBlock": "morning|afternoon|evening",
-        "location": { "lat": number, "lng": number, "address": "Short address, City", "placeId": "string" }
+        "location": { "lat": number, "lng": number, "address": "Short Address, City", "placeId": "string" }
       }],
       "localTip": "string"
     }]
@@ -124,8 +124,9 @@ SCHEMA:
 }
 
 RULES:
-1. Address Format: Use ONLY "Place Name, Short address, City" (e.g., "Eiffel Tower, Paris"). No full street addresses.
+1. Address Format: Use ONLY "Short address, City" (e.g., "Red Fort, Chandni Chowk, Delhi").
 2. dayTimeBlocks: Use the 'dayTimeBlocks' object in overview; do NOT repeat time ranges inside days.
-3. Length: Keep descriptions extremely punchy.
-4. Accuracy: Use real coordinates for landmarks.
+3. Length: Keep descriptions short (10-15 words max).
+4. Coordinates: MUST be exact venue coordinates with 6 decimal places (e.g., 48.858844). DO NOT use generic city center coordinates.
+5. Accuracy: If the exact coordinate is unknown, select the nearest major landmark.
 `;
