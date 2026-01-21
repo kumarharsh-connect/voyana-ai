@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import toast from 'react-hot-toast';
+import ProgressBar from '@/components/ui/progress-bar';
 import {
   Users,
   Gauge,
@@ -52,6 +53,8 @@ export default function CreateTripPage() {
   const [minBudget, setMinBudget] = useState('');
   const [maxBudget, setMaxBudget] = useState('');
   const [loading, setLoading] = useState(false);
+  const [progressStep, setProgressStep] = useState(0);
+  const [progressStepName, setProgressStepName] = useState('');
 
   const handleCreateTrip = async () => {
     if (!destination) return;
@@ -59,8 +62,12 @@ export default function CreateTripPage() {
     const normalizedGroupType = groupType.toLowerCase();
 
     setLoading(true);
+    setProgressStep(0);
+    setProgressStepName('Validating your input');
 
     try {
+      setProgressStep(1);
+      setProgressStepName('Generating itinerary');
       const res = await fetch('/api/trips', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -76,11 +83,23 @@ export default function CreateTripPage() {
       });
 
       const data = await res.json();
+
+      // Simulate progress steps for better UX
+      setProgressStep(2);
+      setProgressStepName('Adding locations');
+      await new Promise((resolve) => setTimeout(resolve, 800));
+
+      setProgressStep(3);
+      setProgressStepName('Finalizing your trip');
+      await new Promise((resolve) => setTimeout(resolve, 800));
+
       if (!res.ok || !data.tripId) {
         if (res.status === 429) {
+          const retryAfter = data.retryAfter || 1;
           toast.error(
-            data.error ??
-              'AI is busy right now. Please try again in a few minutes.',
+            data.error ||
+              `AI is busy. Please try again after ${retryAfter} minute${retryAfter > 1 ? 's' : ''}.`,
+            { duration: 6000 },
           );
           setTimeout(() => setLoading(false), 3000);
           return;
@@ -88,6 +107,8 @@ export default function CreateTripPage() {
 
         toast.error(data.error ?? 'Failed to generate trip.');
         setLoading(false);
+        setProgressStep(0);
+        setProgressStepName('');
         return;
       }
 
@@ -98,11 +119,21 @@ export default function CreateTripPage() {
       toast.error('Something went wrong. Please try again.');
     } finally {
       setLoading(false);
+      setProgressStep(0);
+      setProgressStepName('');
     }
   };
 
   return (
     <div className='relative min-h-screen flex items-center justify-center px-4 py-8 lg:px-8 font-body'>
+      {/* Progress Bar Overlay - Show when loading */}
+      {loading && (
+        <ProgressBar
+          currentStep={progressStep}
+          totalSteps={4}
+          currentStepName={progressStepName}
+        />
+      )}
       <div
         className='absolute inset-0 bg-cover bg-center'
         style={{ backgroundImage: "url('/hero/trips-hero-backdrop.webp')" }}

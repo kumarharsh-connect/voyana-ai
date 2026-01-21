@@ -50,9 +50,8 @@ async function deletetrip(tripId: string) {
     return;
   }
 
-  toast.success('Trip deleted successfully.');
-
   window.location.reload();
+  toast.success('Trip deleted successfully.');
 }
 
 export default function TripCard({ trip }: TripCardProps) {
@@ -77,7 +76,7 @@ export default function TripCard({ trip }: TripCardProps) {
           <MoreVertical className='h-4 w-4 text-muted-foreground' />
         </button>
         {menuOpen && (
-          <div className='absolute top-12 left-3 z-20 w-36 rounded-xl border border-border bg-background shadow-lg overflow-hidden'>
+          <div className='absolute top-12 left-3 z-2 w-36 rounded-xl border border-border bg-background shadow-lg overflow-hidden'>
             <button
               onClick={() => {
                 router.push(`/trips/${trip.id}`);

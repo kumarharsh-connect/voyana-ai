@@ -51,8 +51,12 @@ export default function AIAssistant({
 
       if (!res.ok) {
         if (res.status === 429) {
+          const errorData = await res.json();
+          const retryAfter = errorData.retryAfter || 1;
           toast.error(
-            data.error ?? 'AI is busy. Please retry your message shortly.',
+            errorData.error ||
+              `AI is busy. Please retry after ${retryAfter} minute${retryAfter > 1 ? 's' : ''}.`,
+            { duration: 6000 },
           );
           return;
         }

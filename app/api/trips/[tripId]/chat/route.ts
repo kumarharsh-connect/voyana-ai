@@ -5,7 +5,7 @@ import { prisma } from '@/lib/prisma';
 import { NextResponse } from 'next/server';
 
 import { openai } from '@/lib/ai/openai';
-import { SYSTEM_PROMPT } from '@/lib/ai/systemPrompt';
+import { UNIFIED_GENERATION_SYSTEM_PROMPT } from '@/lib/ai/generationSystemPrompt';
 import { buildChatPrompt } from '@/lib/ai/chatPromptBuilder';
 import { aiLimiter } from '@/lib/rate-limit';
 
@@ -84,7 +84,7 @@ export async function POST(
       model: 'gpt-4o-mini',
       temperature: 0.4,
       messages: [
-        { role: 'system', content: SYSTEM_PROMPT },
+        { role: 'system', content: UNIFIED_GENERATION_SYSTEM_PROMPT },
         { role: 'user', content: prompt },
       ],
     });
@@ -144,11 +144,21 @@ export async function POST(
     if (
       error?.status === 429 ||
       error?.code === 'rate_limit_exceeded' ||
-      error?.message?.includes('Rate limit')
+      error?.message?.includes('Rate limit') ||
+      error?.message?.includes('rate limit')
     ) {
+      // Extract retry time from OpenAI rate limit error message
+      let retryMinutes = 1;
+      const rateLimitMessage = error?.message || '';
+      const minutesMatch = rateLimitMessage.match(/(\d+)\s*minutes?/i);
+      if (minutesMatch) {
+        retryMinutes = parseInt(minutesMatch[1]);
+      }
+
       return NextResponse.json(
         {
-          error: 'AI is temporarily rate-limited. Please retry shortly.',
+          error: `AI is rate-limited. Please try again after ${retryMinutes} minute${retryMinutes > 1 ? 's' : ''}.`,
+          retryAfter: retryMinutes,
         },
         { status: 429 },
       );

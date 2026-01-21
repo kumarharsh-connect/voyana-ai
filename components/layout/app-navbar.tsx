@@ -35,7 +35,7 @@ export default function AppNavbar() {
 
   return (
     <nav
-      className={`w-full fixed top-0 inset-x-0 z-50 transition-all ease-out duration-500 font-body ${
+      className={`w-full fixed top-0 inset-x-0 z-90 transition-all ease-out duration-500 font-body ${
         isScrolled
           ? 'bg-background/80 backdrop-blur-sm shadow-sm'
           : 'bg-background/90 shadow-sm'

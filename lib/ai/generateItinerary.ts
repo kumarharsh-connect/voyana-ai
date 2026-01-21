@@ -1,8 +1,6 @@
 import { openai } from './openai';
-import { GENERATION_SYSTEM_PROMPT } from './generationSystemPrompt';
-import { buildGenerationPrompt } from './generationPromptBuilder';
-import { enrichItineraryWithMaps } from '@/lib/maps/enrichItineraryWithMaps';
-import { enrichItineraryUX } from './enrichItineraryUX';
+import { UNIFIED_GENERATION_SYSTEM_PROMPT } from './generationSystemPrompt';
+import { buildUnifiedGenerationPrompt } from './generationPromptBuilder';
 
 type TripData = {
   destination: string;
@@ -14,13 +12,8 @@ type TripData = {
   pace: string | null;
 };
 
-/**
- * @param tripData
- * @returns
- **/
 export async function generateItinerary(tripData: TripData) {
-  // Base generation
-  const prompt = buildGenerationPrompt({
+  const prompt = buildUnifiedGenerationPrompt({
     destination: tripData.destination,
     days: tripData.days,
     groupType: tripData.groupType ?? 'solo',
@@ -33,8 +26,10 @@ export async function generateItinerary(tripData: TripData) {
   const completion = await openai.chat.completions.create({
     model: 'gpt-4o-mini',
     temperature: 0.4,
+    response_format: { type: 'json_object' },
+    max_tokens: 2000,
     messages: [
-      { role: 'system', content: GENERATION_SYSTEM_PROMPT },
+      { role: 'system', content: UNIFIED_GENERATION_SYSTEM_PROMPT },
       { role: 'user', content: prompt },
     ],
   });
@@ -44,43 +39,37 @@ export async function generateItinerary(tripData: TripData) {
     throw new Error('AI_EMPTY_RESPONSE');
   }
 
-  let baseItinerary;
+  let completeItinerary;
   try {
     const parsed = JSON.parse(aiText);
-    baseItinerary =
-      parsed?.itinerary && Array.isArray(parsed.itinerary.days)
-        ? parsed.itinerary
-        : parsed;
 
-    if (!Array.isArray(baseItinerary?.days)) {
+    // Validate the response structure
+    if (!parsed?.itinerary || !Array.isArray(parsed.itinerary.days)) {
       throw new Error('AI_INVALID_RESPONSE');
     }
-  } catch {
-    throw new Error('AI_INVALID_JSON');
-  }
 
-  if (!baseItinerary?.days) {
-    throw new Error('AI_INVALID_RESPONSE');
-  }
+    completeItinerary = parsed.itinerary;
 
-  // Enrich with maps (locations)
-  let withMaps: any = baseItinerary;
-  try {
-    withMaps = await enrichItineraryWithMaps(
-      baseItinerary,
-      tripData.destination,
-    );
+    // Validate required fields
+    for (const day of completeItinerary.days) {
+      if (!day.day || !Array.isArray(day.activities)) {
+        throw new Error('AI_INVALID_DAY_STRUCTURE');
+      }
+
+      // Validate activities have required fields
+      for (const activity of day.activities) {
+        if (!activity.name || !activity.description || !activity.timeBlock) {
+          throw new Error('AI_INVALID_ACTIVITY_STRUCTURE');
+        }
+      }
+    }
   } catch (error) {
-    console.error('Maps enrichment error:', error);
+    console.error('AI Response parsing error:', error);
+    if (error instanceof SyntaxError) {
+      throw new Error('AI_INVALID_JSON');
+    }
+    throw error;
   }
 
-  let finalItinerary = withMaps;
-  try {
-    finalItinerary = await enrichItineraryUX(withMaps);
-  } catch (error) {
-    console.error('UX enrichment error:', error);
-  }
-
-  // final result
-  return finalItinerary;
+  return completeItinerary;
 }

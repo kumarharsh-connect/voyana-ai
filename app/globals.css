@@ -193,3 +193,28 @@
   height: 100%;
   width: 100%;
 }
+
+/* Shimmer animation for progress bars */
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.animate-shimmer {
+  animation: shimmer 2s infinite;
+  background-size: 200% 100%;
+  background-image: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.1) 20%,
+    transparent 40%,
+    rgba(255, 255, 255, 0.1) 60%,
+    transparent 80%,
+    rgba(255, 255, 255, 0.1) 100%,
+    transparent
+  );
+}
